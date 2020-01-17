@@ -1,27 +1,33 @@
 ﻿
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { ContatoData } from './ExibeContato';
+import { ClienteData } from './ListaClientes';
 
 export class ExibeCliente extends React.Component {
     constructor(props) {
         super(props);
         //atualiza o state do componente
-        this.state = { titulo: "", carregando: true, contData: new ContatoData };
-       
+        this.state = { titulo: "", carregando: true, contData: new ClienteData };
+
         //id do contato
         let contid = this.props.match.params["contid"];
         // define o state para a edição de um contato
         if (contid > 0) {
-            fetch('api/Contato/GetContatos/' + contid)
+            fetch('http://localhost:49929/api/vwClientes/ff0de7f4-9ad0-49cd-805f-d8a223e68c78', {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     this.setState({ titulo: "Editar", carregando: false, contData: data });
-                });
+                    console.log(data);
+                }).catch(error => { console.log(error) });
         }
         else // define o state para adição de contato
         {
-            this.state = { titulo: "Criar", carregando: false, listaCidades: [], contData: new ContatoData };
+            this.state = { titulo: "Criar", carregando: false, contData: new ClienteData };
         }
         // este binding é necessário para fazer o 'this' funcionar no callback  
         this.handleSave = this.handleSave.bind(this);
@@ -46,13 +52,13 @@ export class ExibeCliente extends React.Component {
         const data = new FormData(e.target);
         // PUT solicitação para editar contato
         if (this.state.contData.contatoId) {
-            fetch('api/Contato/PutContatos/' + this.state.contData.contatoId, {
+            fetch('api/vwClientes/' + this.state.contData.idCliente, {
                 method: 'PUT',
                 body: data,
             }).then((response) => {
                 console.log(response)
                 if (response.status == 200) {
-                    this.props.history.push("/exibecontato");
+                    this.props.history.push("/clientes");
                 } else {
                     window.alert('Ocorreu um erro ao atualizar cadastro!');
                 }
@@ -60,69 +66,57 @@ export class ExibeCliente extends React.Component {
         }
         else // POST requisição para adicionar contato
         {
-            fetch('api/Contato/PostContatos', {
+            fetch('api/vwCliente', {
                 method: 'POST',
                 body: data,
             }).then((response) => response.json())
                 .then((responseJson) => {
-                    this.props.history.push("/exibecontato");
+                    this.props.history.push("/clientes");
                 })
         }
     }
     // trata o evento do botão cancela
     handleCancel(e) {
         e.preventDefault();
-        this.props.history.push("/exibecontato");
+        this.props.history.push("/clientes");
     }
     // Retorna o formulario HTMl para o método Render
     renderCreateForm() {
         return (
-            <form onSubmit={this.handleSave} >
-                <div className="form-group row" >
-                    <input type="hidden" name="contatoId" value={this.state.contData.contatoId} />
+
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h5 className="modal-title">Editar Cliente</h5>
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
                 </div>
-                < div className="form-group row" >
-                    <label className=" control-label col-md-12" htmlFor="Nome">Nome</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="nome"
-                            defaultValue={this.state.contData.nome} required />
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Sexo">Sexo</label>
-                    <div className="col-md-4">
-                        <select className="form-control" data-val="true" name="sexo"
-                            defaultValue={this.state.contData.sexo} required>
-                            <option value="">-- Selecione o Sexo  --</option>
-                            <option value="Masculino">Masculino</option>
-                            <option value="Feminino">Feminino</option>
-                        </select>
-                    </div>
-                </div >
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Email" >Email</label>
-                    <div className="col-md-4">
-                        <input className="form-control" type="text" name="Email"
-                            defaultValue={this.state.contData.email} required />
-                    </div>
+                <div className="modal-body">
+                    <form onSubmit={this.handleSave} >
+                        <div className="form-group">
+                            <label>*Nome:</label>
+                            <input type="text" className="form-control" name="nomeCliente" defaultValue={this.state.contData.nomeCliente} required="" />
+                        </div>
+                        <div className="form-group">
+                            <label>*Telefone:</label>
+                            <input type="text" className="form-control" required="" />
+                        </div>
+                        <div className="form-group">
+                            <label>E-mail:</label>
+                            <input type="text" className="form-control" />
+                        </div>
+                        <div className="form-group">
+                            <label>Aniversário:</label>
+                            <input type="text" className="form-control" />
+                        </div>
+                        <div className="modal-footer bg-whitesmoke br">
+                            <button type="button" className="btn btn-primary" id="swal-2">Editar</button>
+                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                        </div>
+                    </form>
                 </div>
-                <div className="form-group row">
-                    <label className="control-label col-md-12" htmlFor="Cidade">Cidade</label>
-                    <div className="col-md-4">
-                        <select className="form-control" data-val="true" name="Cidade"
-                            defaultValue={this.state.contData.cidade} required>
-                            <option value="">-- Selecione a cidade --</option>
-                            {listaCidades.map(cidade =>
-                                <option key={cidade.cidadeId} value={cidade.cidadeNome}>{cidade.cidadeNome}</option>
-                            )}
-                        </select>
-                    </div>
-                </div >
-                <div className="form-group">
-                    <button type="submit" className="btn btn-default">Salvar</button>
-                    <button className="btn" onClick={this.handleCancel}>Cancelar</button>
-                </div >
-            </form >
+            </div>
         );
     }
-}  
+}
+          

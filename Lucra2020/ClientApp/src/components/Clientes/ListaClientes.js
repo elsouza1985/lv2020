@@ -18,11 +18,13 @@ export class ListaClientes extends Component {
                 this.setState({ listaclientes: data, loading: false });
             });
         this.handleEdit = this.handleEdit.bind(this);
+        this.renderlistaclientesTable = this.renderlistaclientesTable.bind(this);
     }
     handleEdit(id) {
+     
         this.props.history.push("/clientes/edit/" + id);
     }
-    static renderlistaclientesTable(listaclientes) {
+    renderlistaclientesTable(listaclientes) {
         return (
             <table className='table table-striped'>
                 <thead>
@@ -42,13 +44,13 @@ export class ListaClientes extends Component {
                             <td>{cliente.email}</td>
                             <td>{cliente.datadeNascimento}</td>
                             <td className="align-middle">
-                                <a href="#" className="btn btn-icon btn-dark" data-toggle="tooltip" title="" data-original-title="Enviar SMS" alt="Enviar SMS">
+                                <a  className="btn btn-icon btn-dark" data-toggle="tooltip" title="" data-original-title="Enviar SMS" alt="Enviar SMS">
                                     <i className="fa fa-comments"></i>
                                 </a>
-                                <a href="#" className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(cliente.uidCliente)} title="Atualizar Clientes" data-original-title="Atualizar Clientes" alt="Atualizar Clientes" data-toggle="modal" data-target="#editarCliente">
+                                <a  className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(cliente.uidCliente)} title="Atualizar Cliente">
                                     <i className="fas fa-pen"></i>
                                 </a>
-                                <a href="#" id="swal-6" className="btn btn-icon btn-danger" data-toggle="tooltip" title="" data-original-title="Deletar Clientes" alt="Deletar Clientes">
+                                <a  id="swal-6" className="btn btn-icon btn-danger" data-toggle="tooltip" title="" data-original-title="Deletar Clientes" alt="Deletar Clientes">
                                     <i className="fas fa-trash-alt"></i>
                                 </a>
                             </td>
@@ -62,15 +64,15 @@ export class ListaClientes extends Component {
     render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : ListaClientes.renderlistaclientesTable(this.state.listaclientes);
+            : this.renderlistaclientesTable(this.state.listaclientes);
 
         return (
             <section className="section">
             <div className="section-header">
                     <h1><i className="fa fa-user-friends"></i> Clientes</h1>
                     <div className="section-header-breadcrumb">
-                        <div className="breadcrumb-item active"><a href="dashboard.php">Dashboard</a></div>
-                        <div className="breadcrumb-item"><a href="clientes.php">Clientes</a></div>
+                        <div className="breadcrumb-item active"><a href="/dashboard">Dashboard</a></div>
+                        <div className="breadcrumb-item"><a href="/clientes">Clientes</a></div>
                 </div>
                 </div>
                 <div className="section-body">
@@ -79,4 +81,12 @@ export class ListaClientes extends Component {
                 </section>
         );
     }
+}
+export class ClienteData {
+    uidCliente: 0;
+    nomeCliente: "";
+    ddd: 0;
+    telefone: 0;
+    email: "";
+    datadeNascimento: "";
 }
