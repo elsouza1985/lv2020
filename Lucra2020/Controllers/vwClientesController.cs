@@ -49,6 +49,7 @@ namespace Lucra2020.Controllers
             {
                 return BadRequest();
             }
+            vwCliente.UidEstabelecimento = new Guid("0CB0E46F-6F9D-483E-8494-3DA10347D9C3");
 
             _context.Entry(vwCliente).State = EntityState.Modified;
 
@@ -68,13 +69,14 @@ namespace Lucra2020.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/vwClientes
         [HttpPost]
         public async Task<ActionResult<vwCliente>> PostvwCliente(vwCliente vwCliente)
         {
+            vwCliente.UidEstabelecimento = new Guid("0CB0E46F-6F9D-483E-8494-3DA10347D9C3");
             _context.VwCliente.Add(vwCliente);
             await _context.SaveChangesAsync();
 

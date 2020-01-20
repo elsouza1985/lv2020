@@ -1,33 +1,28 @@
 ﻿
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { ClienteData } from './ListaClientes';
+//import { ClienteData } from './ListaClientes';
 
 export class ExibeCliente extends React.Component {
     constructor(props) {
         super(props);
         //atualiza o state do componente
-        this.state = { titulo: "", carregando: true, contData: new ClienteData };
+        this.state = { titulo: "", carregando: true, contData:[]};
 
         //id do contato
         let contid = this.props.match.params["contid"];
         // define o state para a edição de um contato
         if (contid > 0) {
-            fetch('http://localhost:49929/api/vwClientes/ff0de7f4-9ad0-49cd-805f-d8a223e68c78', {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
+            fetch('http://localhost:49929/api/vwClientes/ff0de7f4-9ad0-49cd-805f-d8a223e68c78' )
                 .then(response => response.json())
                 .then(data => {
                     this.setState({ titulo: "Editar", carregando: false, contData: data });
                     console.log(data);
-                }).catch(error => { console.log(error) });
+                });
         }
         else // define o state para adição de contato
         {
-            this.state = { titulo: "Criar", carregando: false, contData: new ClienteData };
+            this.state = { titulo: "Criar", carregando: false, contData: [] };
         }
         // este binding é necessário para fazer o 'this' funcionar no callback  
         this.handleSave = this.handleSave.bind(this);
