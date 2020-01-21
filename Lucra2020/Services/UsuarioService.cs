@@ -1,9 +1,12 @@
 ﻿using Lucra2020.Helpers;
 using Lucra2020.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -14,62 +17,36 @@ namespace Lucra2020.Services
 {
     public interface IUsuarioService
     {
-        vwUsuario Authenticate(string username, string password);
-        IEnumerable<vwUsuario> GetAll();
+        UserModel Authenticate(string login, string senha);
+    
     }
 
     public class UsuarioService : IUsuarioService
     {
-        // users hardcoded for simplicity, store in a db with hashed passwords in production applications
-        private List<vwUsuario> _users = new List<vwUsuario>
+        public  UserModel Authenticate(string login, string senha)
         {
-            new vwUsuario { NomeUsuario = "Test", EmailUsuario = "test", SenhaUsuario = "test" }
-        };
-
-        private readonly AppSettings _appSettings;
-
-        public UsuarioService(IOptions<AppSettings> appSettings)
-        {
-            _appSettings = appSettings.Value;
-        }
-
-        public vwUsuario Authenticate(string username, string password)
-        {
-            var user = _users.SingleOrDefault(x => x.EmailUsuario == username && x.SenhaUsuario == password);
-
-            // return null if user not found
-            if (user == null)
-                return null;
-
-            // authentication successful so generate jwt token
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            using (AppDbContext dbContext = new AppDbContext())
             {
-                Subject = new ClaimsIdentity(new Claim[]
+
+                var pLogin = new SqlParameter("@EmailUsuario", login);
+                var pSenha = new SqlParameter("@SenhaUsuario", senha);
+                //var senha1 = Encoding.UTF8.GetBytes(senha);
+
+                vwUsuario usuario = dbContext.VwUsuario.Where(x => x.EmailUsuario == login && x.SenhaUsuario == senha).FirstOrDefault();
+
+                UserModel user = new UserModel
                 {
-                    new Claim(ClaimTypes.Name, user.UidUsuario.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            //user.Token = tokenHandler.WriteToken(token);
+                    Email = usuario.EmailUsuario,
+                    Name = usuario.NomeUsuario
+                };                                                   
+                    
 
-            // remove password before returning
-            user.SenhaUsuario = null;
+                return user;
+            }
 
-            return user;
+
         }
 
-        public IEnumerable<vwUsuario> GetAll()
-        {
-            // return users without passwords
-            return _users.Select(x =>
-            {
-                x.SenhaUsuario = null;
-                return x;
-            });
-        }
     }
 }
+
