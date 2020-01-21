@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { slide as Menu } from 'react-burger-menu';
 import './NavMenu.css';
 import "../Content/modules/bootstrap/css/bootstrap.min.css";
 import "../Content/modules/ionicons/css/ionicons.min.css";
@@ -33,6 +34,12 @@ export class NavMenu extends Component {
     render() {
         return (
             <header>
+                <Menu>
+                    <a id="home" className="menu-item" href="/">Home</a>
+                    <a id="about" className="menu-item" href="/about">About</a>
+                    <a id="contact" className="menu-item" href="/contact">Contact</a>
+                    <a onClick={this.showSettings} className="menu-item--small" href="">Settings</a>
+                </Menu>
                 <div className="main-wrapper main-wrapper-1">
                     <div className="navbar-bg"></div>
                     <nav className="navbar navbar-expand-lg main-navbar">
@@ -149,10 +156,14 @@ export class NavMenu extends Component {
                             </div>                                    <ul className="sidebar-menu">
                                 
                                 <li className="menu-header">Menu Principal</li>
-                                
-                                                        <li><a className="nav-link" href="dashboard.php" data-toggle="tooltip" data-placement="right" title="Dashboard"><i className="ion-speedometer"></i> <span>Dashboard</span></a></li>
                                 <NavItem>
-                                    <NavLink tag={Link} className="text-dark nav-link" to="/clientes"><i className="fa fa-user-friends"></i> <span>Clientes</span></NavLink>
+                                    <NavLink tag={Link} className="nav-link" to="/home"><i className="ion-speedometer"></i>  <span>Dashboard</span></NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink tag={Link} className="nav-link" to="/clientes"><i className="fa fa-user-friends"></i> <span>Clientes</span></NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink tag={Link} className="nav-link" to="/servicos"><i className="fa fa-briefcase"></i> <span>Serviços</span></NavLink>
                                 </NavItem>
                                                         <li><a className="nav-link"  href="itens.php" data-toggle="tooltip" data-placement="right" title="Itens"><i className="fa fa-clipboard-list"></i> <span>Itens</span></a></li>
                                                         <li><a className="nav-link"  href="conjunto_itens.php" data-toggle="tooltip" data-placement="right" title="Conjunto de Itens"><i className="fa fa-list-ul"></i> <span>Conjunto de Itens</span></a></li>
