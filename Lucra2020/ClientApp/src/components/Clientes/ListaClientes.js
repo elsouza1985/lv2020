@@ -8,9 +8,9 @@ export class ListaClientes extends Component {
     constructor(props) {
        
         super(props);
-        this.state = { listaclientes: [], loading: true, loadingcliente: false, clienteData:  [] };
+        this.state = { listaclientes: [], loading: true, loadingcliente: false, clienteData: []};
 
-
+       
         this.loadClientList = this.loadClientList.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.renderlistaclientesTable = this.renderlistaclientesTable.bind(this);
@@ -18,7 +18,9 @@ export class ListaClientes extends Component {
         this.handleSave = this.handleSave.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.loadClientList();
+     
     }
+ 
     loadClientList() {
         fetch('api/vwClientes/', {
             method: 'GET',
@@ -94,7 +96,7 @@ export class ListaClientes extends Component {
 
     handleEdit(id) {
 
-        fetch('http://localhost:49929/api/vwClientes/' + id, {
+        fetch('api/vwClientes/' + id, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -118,7 +120,7 @@ export class ListaClientes extends Component {
     handleDelete(id) {
 
         if (window.confirm('Esta ação irá apagar o registro, confirma?')) {
-            fetch('http://localhost:49929/api/vwClientes/' + id, {
+            fetch('api/vwClientes/' + id, {
                 method: "DELETE",
                 headers: {
                     'Content-Type': 'application/json',
@@ -136,7 +138,7 @@ export class ListaClientes extends Component {
     renderClienteData(clienteData) {
         return (
             <form id="modalcliente" onSubmit={this.handleSave}  >
-                <input type="hidden" name="uidCliente" value={clienteData.uidCliente} />
+                <input type="hidden" name="uidCliente" value={clienteData.uidCliente} onChange={e => this.changeValue('uidCliente', e.target.value)} />
                 <div className="form-group">
                     <label>*Nome:</label>
                     <input type="text" className="form-control" name="nomeCliente" value={clienteData.nomeCliente} onChange={e => this.changeValue('nomeCliente', e.target.value)} required />
@@ -145,7 +147,7 @@ export class ListaClientes extends Component {
                     <label>*Telefone:</label>
                     <div className="row">
                         <div className="col-3">
-                            <input type="text" className="form-control" name="ddd" onChange={e => this.changeValue('ddd', e.target.value)} value={clienteData.ddd} required />
+                            <input type="text" className="form-control" name="ddd" onChange={e => this.changeValue('ddd', e.target.value)} value={clienteData.ddd} required maxLength={2} />
                         </div>
                         <div className="col-9">
                             <input type="text" className="form-control" name="telefone" onChange={e => this.changeValue('telefone', e.target.value)} value={clienteData.telefone} required />
@@ -190,7 +192,7 @@ export class ListaClientes extends Component {
                                 <a className="btn btn-icon btn-dark" data-toggle="tooltip" title="" data-original-title="Enviar SMS" alt="Enviar SMS">
                                     <i className="fa fa-comments"></i>
                                 </a>
-                                <a className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(cliente.uidCliente)} title="Atualizar Cliente" data-toggle="modal" data-target="#editarCliente">
+                                <a className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(cliente.uidCliente)} title="Atualizar Cliente" data-toggle="modal" data-target="#modalcliente">
                                     <i className="fas fa-pen"></i>
                                 </a>
                                 <a id="swal-6" className="btn btn-icon btn-danger" data-toggle="tooltip" onClick={(id) => this.handleDelete(cliente.uidCliente)} data-original-title="Deletar Clientes" alt="Deletar Clientes">
@@ -212,7 +214,7 @@ export class ListaClientes extends Component {
         let clienteRender = this.state.loadingcliente ? <p><em>Carregando...</em></p>
             : this.renderClienteData(this.state.clienteData);
         return (
-            <div >
+            <div>
                 <section className="section">
                     <div className="section-header">
                         <h1><i className="fa fa-user-friends"></i> Clientes</h1>
@@ -222,14 +224,14 @@ export class ListaClientes extends Component {
                         </div>
                     </div>
                     <p>
-                        <a to="#" data-toggle="modal" data-target="#editarCliente" onClick={() => { this.setState({ clienteData : this.ClienteData() }) }} >Adicionar cliente</a>
+                        <button type="button" data-toggle="modal" data-target="#modalcliente" onClick={() => { this.setState({ clienteData : this.ClienteData() }) }} >Adicionar cliente</button>
                     </p>
                     <div className="section-body">
                         {contents}
                     </div>
                 </section>
-                <div>
-                    <div className="modal fade" tabIndex="-1" role="dialog" id="editarCliente">
+                 <div>
+                    <div className="modal fade" tabIndex="-1" role="dialog" id="modalcliente">
                         <div className="modal-dialog" role="document">
                             <div className="modal-content">
                                 <div className="modal-header">

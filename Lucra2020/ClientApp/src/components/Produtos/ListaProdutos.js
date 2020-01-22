@@ -11,15 +11,17 @@ export class ListaProdutos extends Component {
         this.state = { ListaProdutos: [], loading: true, loadingcliente: false, produtoData:  [] };
 
 
-        this.loadClientList = this.loadClientList.bind(this);
+        this.loadProdutoList = this.loadProdutoList.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.renderListaProdutosTable = this.renderListaProdutosTable.bind(this);
         this.renderprodutoData = this.renderprodutoData.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
-        this.loadClientList();
+        this.ProdutoData = this.ProdutoData.bind(this);
+        this.loadProdutoList();
+        
     }
-    loadClientList() {
+    loadProdutoList() {
         fetch('api/vwProdutos/', {
             method: 'GET',
             headers: {
@@ -37,18 +39,18 @@ export class ListaProdutos extends Component {
             NomeProduto: "",
             EANProduto: "",
          }
-        return clientData;
+        return produtoData;
     }
     handleSave(e) {
         e.preventDefault();
-        let clientID = this.state.produtoData.idProduto;
+        let idProduto = this.state.produtoData.idProduto;
         const data = {
-            IdProduto: this.state.produtoData.IdProduto,
+            IdProduto: this.state.produtoData.idProduto,
             NomeProduto: document.getElementsByName('nomeProduto')[0].value,
-            EANProduto: document.getElementsByName('EANProduto')[0].value
+            EANProduto: document.getElementsByName('eanProduto')[0].value
         }
         // PUT solicitação para editar contato
-        if (clientID) {
+        if (idProduto) {
             fetch('api/vwProdutos/' + idProduto, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -105,7 +107,7 @@ export class ListaProdutos extends Component {
                 ...prevState.produtoData[prop] = value
             }
         }))
-        this.loadClientList();
+        this.loadProdutoList();
     }
     handleDelete(id) {
 
@@ -127,31 +129,17 @@ export class ListaProdutos extends Component {
     }
     renderprodutoData(produtoData) {
         return (
-            <form id="modalcliente" onSubmit={this.handleSave}  >
-                <input type="hidden" name="uidCliente" value={produtoData.uidCliente} />
+            <form  onSubmit={this.handleSave}  >
+                <input type="hidden" name="idProduto" value={produtoData.idProduto} />
                 <div className="form-group">
                     <label>*Nome:</label>
-                    <input type="text" className="form-control" name="nomeCliente" value={produtoData.nomeCliente} onChange={e => this.changeValue('nomeCliente', e.target.value)} required />
+                    <input type="text" className="form-control" name="nomeProduto" value={produtoData.nomeProduto} onChange={e => this.changeValue('nomeProduto', e.target.value)} required />
                 </div>
                 <div className="form-group">
-                    <label>*Telefone:</label>
-                    <div className="row">
-                        <div className="col-3">
-                            <input type="text" className="form-control" name="ddd" onChange={e => this.changeValue('ddd', e.target.value)} value={produtoData.ddd} required />
-                        </div>
-                        <div className="col-9">
-                            <input type="text" className="form-control" name="telefone" onChange={e => this.changeValue('telefone', e.target.value)} value={produtoData.telefone} required />
-                        </div>
-                    </div>
+                    <label>Codigo do Produto</label>
+                    <input type="number" className="form-control" name="eanProduto" onChange={e => this.changeValue('eanProduto', e.target.value)} value={produtoData.eanProduto} />
                 </div>
-                <div className="form-group">
-                    <label>E-mail:</label>
-                    <input type="text" className="form-control" name="email" onChange={e => this.changeValue('email', e.target.value)} value={produtoData.email} />
-                </div>
-                <div className="form-group">
-                    <label>Aniversário:</label>
-                    <input type="text" className="form-control" name="dataDeNascimento" onChange={e => this.changeValue('dataDeNascimento', e.target.value)} value={produtoData.dataDeNascimento} />
-                </div>
+               
                 <div className="modal-footer bg-whitesmoke br">
                     <button type="submit" className="btn btn-primary" id="swal-2">Salvar</button>
                     <button type="button" className="btn btn-secondary" data-dismiss="modal">Fechar</button>
@@ -165,27 +153,20 @@ export class ListaProdutos extends Component {
                 <thead>
                     <tr>
                         <th>Nome</th>
-                        <th>Telefone</th>
-                        <th>Email</th>
-                        <th>Aniversario</th>
+                        <th>Codigo</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {ListaProdutos.map(cliente =>
-                        <tr key={cliente.uidCliente}>
-                            <td>{cliente.nomeCliente}</td>
-                            <td>{cliente.ddd} - {cliente.telefone}</td>
-                            <td>{cliente.email}</td>
-                            <td>{cliente.datadeNascimento}</td>
+                    {ListaProdutos.map(produto =>
+                        <tr key={produto.idProduto}>
+                            <td>{produto.nomeProduto}</td>
+5                            <td>{produto.eanProduto}</td>
                             <td className="align-middle">
-                                <a className="btn btn-icon btn-dark" data-toggle="tooltip" title="" data-original-title="Enviar SMS" alt="Enviar SMS">
-                                    <i className="fa fa-comments"></i>
-                                </a>
-                                <a className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(cliente.uidCliente)} title="Atualizar Cliente" data-toggle="modal" data-target="#editarCliente">
+                                <a className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(produto.idProduto)} title="Atualizar Cliente" data-toggle="modal" data-target="#editarCliente">
                                     <i className="fas fa-pen"></i>
                                 </a>
-                                <a id="swal-6" className="btn btn-icon btn-danger" data-toggle="tooltip" onClick={(id) => this.handleDelete(cliente.uidCliente)} data-original-title="Deletar Clientes" alt="Deletar Clientes">
+                                <a id="swal-6" className="btn btn-icon btn-danger" data-toggle="tooltip" onClick={(id) => this.handleDelete(produto.idProduto)} data-original-title="Deletar Clientes" alt="Deletar Clientes">
                                     <i className="fas fa-trash-alt"></i>
                                 </a>
                             </td>
@@ -207,21 +188,21 @@ export class ListaProdutos extends Component {
             <div >
                 <section className="section">
                     <div className="section-header">
-                        <h1><i className="fa fa-user-friends"></i> Clientes</h1>
+                        <h1><i className="fa fa-clipboard-list"></i> Produtos</h1>
                         <div className="section-header-breadcrumb">
                             <div className="breadcrumb-item active"><a href="/dashboard">Dashboard</a></div>
-                            <div className="breadcrumb-item"><a href="/clientes">Clientes</a></div>
+                            <div className="breadcrumb-item"><a href="/produtos">Produtos</a></div>
                         </div>
                     </div>
                     <p>
-                        <a to="#" data-toggle="modal" data-target="#editarCliente" onClick={() => { this.setState({ produtoData : this.produtoData() }) }} >Adicionar cliente</a>
+                        <a to="#" data-toggle="modal" data-target="#editarCliente" onClick={() => { this.setState({ produtoData : this.ProdutoData() }) }} >Adicionar cliente</a>
                     </p>
                     <div className="section-body">
                         {contents}
                     </div>
                 </section>
                 <div>
-                    <div className="modal fade" tabIndex="-1" role="dialog" id="editarCliente">
+                    <div className="modal fade" tabIndex="-1" role="dialog" name="editarCliente" id="editarCliente">
                         <div className="modal-dialog" role="document">
                             <div className="modal-content">
                                 <div className="modal-header">
