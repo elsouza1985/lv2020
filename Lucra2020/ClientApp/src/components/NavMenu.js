@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { slide as Menu } from 'react-burger-menu';
 import './NavMenu.css';
 import "../Content/modules/bootstrap/css/bootstrap.min.css";
 import "../Content/modules/ionicons/css/ionicons.min.css";
@@ -34,12 +33,7 @@ export class NavMenu extends Component {
     render() {
         return (
             <header>
-                <Menu>
-                    <a id="home" className="menu-item" href="/">Home</a>
-                    <a id="about" className="menu-item" href="/about">About</a>
-                    <a id="contact" className="menu-item" href="/contact">Contact</a>
-                    <a onClick={this.showSettings} className="menu-item--small" href="">Settings</a>
-                </Menu>
+              
                 <div className="main-wrapper main-wrapper-1">
                     <div className="navbar-bg"></div>
                     <nav className="navbar navbar-expand-lg main-navbar">

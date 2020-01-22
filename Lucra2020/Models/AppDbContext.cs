@@ -21,7 +21,9 @@ namespace Lucra2020.Models
         public virtual DbSet<TbMuniMunicipio> TbMuniMunicipio { get; set; }
         public virtual DbSet<vwCliente> VwCliente { get; set; }
         public virtual DbSet<vwUsuario> VwUsuario { get; set; }
-
+        public virtual DbSet<vwAgenda> VwAgenda { get; set; }
+        public virtual DbSet<vwProdutoEstabelecimento> ProdutoEstabelecimento { get; set; }
+        public virtual DbSet<vwProduto> Produto { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 //            if (!optionsBuilder.IsConfigured)

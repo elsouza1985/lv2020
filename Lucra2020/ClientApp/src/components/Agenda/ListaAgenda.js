@@ -1,26 +1,26 @@
-﻿import React, { Component, useState } from 'react';
+﻿import React, { Component } from 'react';
 
 
-export class ListaClientes extends Component {
-    static displayName = ListaClientes.name;
+export class ListaAgenda extends Component {
+    static displayName = ListaAgenda.name;
    
 
     constructor(props) {
        
         super(props);
-        this.state = { listaclientes: [], loading: true, loadingcliente: false, clienteData:  [] };
+        this.state = { listaagenda: [], loading: true, loadingcliente: false, clienteData:  [] };
 
 
-        this.loadClientList = this.loadClientList.bind(this);
+        this.loadAgendaList = this.loadAgendaList.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
-        this.renderlistaclientesTable = this.renderlistaclientesTable.bind(this);
-        this.renderClienteData = this.renderClienteData.bind(this);
+        this.renderlistaagendaTable = this.renderlistaagendaTable.bind(this);
+        this.renderAgendaData = this.renderAgendaData.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
-        this.loadClientList();
+        this.loadAgendaList();
     }
-    loadClientList() {
-        fetch('api/vwClientes/', {
+    loadAgendaList() {
+        fetch('api/vwAgendaes/', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -28,13 +28,13 @@ export class ListaClientes extends Component {
         })
             .then(response => response.json())
             .then(data => {
-                this.setState({ listaclientes: data, loading: false });
+                this.setState({ listaagenda: data, loading: false });
             });
     }
-    ClienteData() {
+    AgendaeData() {
         const clientData = {
-            uidCliente: undefined ,
-            nomeCliente: "",
+            uidAgendae: undefined ,
+            nomeAgendae: "",
             ddd: "",
             telefone: "",
             email: "",
@@ -44,10 +44,10 @@ export class ListaClientes extends Component {
     }
     handleSave(e) {
         e.preventDefault();
-        let clientID = this.state.clienteData.uidCliente;
+        let clientID = this.state.clienteData.uidAgendae;
         const data = {
-            UidCliente: this.state.clienteData.uidCliente,
-            NomeCliente: document.getElementsByName('nomeCliente')[0].value,
+            UidAgendae: this.state.clienteData.uidAgendae,
+            NomeAgendae: document.getElementsByName('nomeAgendae')[0].value,
             Telefone: document.getElementsByName('telefone')[0].value,
             Email: document.getElementsByName('email')[0].value,
             DDD: document.getElementsByName('ddd')[0].value,
@@ -55,7 +55,7 @@ export class ListaClientes extends Component {
         }
         // PUT solicitação para editar contato
         if (clientID) {
-            fetch('api/vwClientes/' + clientID, {
+            fetch('api/vwAgendaes/' + clientID, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -64,7 +64,7 @@ export class ListaClientes extends Component {
             }).then((response) => {
                 console.log(response)
                 if (response.status == 200) {
-                    this.loadClientList();
+                    this.loadAgendaList();
                     
                     
                     document.getElementsByClassName('close')[0].click();
@@ -76,7 +76,7 @@ export class ListaClientes extends Component {
         }
         else // POST requisição para adicionar contato
         {
-            fetch('api/vwClientes/', {
+            fetch('api/vwAgendaes/', {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -84,8 +84,8 @@ export class ListaClientes extends Component {
                 body: JSON.stringify(data),
             }).then((response) => response.json())
                 .then((responseJson) => {
-                    this.loadClientList();
-                    this.setState({ clienteData: this.ClienteData() })
+                    this.loadAgendaList();
+                    this.setState({ clienteData: this.AgendaeData() })
                     document.getElementsByClassName('close')[0].click();
                 })
         }
@@ -94,7 +94,7 @@ export class ListaClientes extends Component {
 
     handleEdit(id) {
 
-        fetch('http://localhost:49929/api/vwClientes/' + id, {
+        fetch('http://localhost:49929/api/vwAgendaes/' + id, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -113,12 +113,12 @@ export class ListaClientes extends Component {
                 ...prevState.clienteData[prop] = value
             }
         }))
-        this.loadClientList();
+        this.loadAgendaList();
     }
     handleDelete(id) {
 
         if (window.confirm('Esta ação irá apagar o registro, confirma?')) {
-            fetch('http://localhost:49929/api/vwClientes/' + id, {
+            fetch('http://localhost:49929/api/vwAgendaes/' + id, {
                 method: "DELETE",
                 headers: {
                     'Content-Type': 'application/json',
@@ -126,20 +126,20 @@ export class ListaClientes extends Component {
             })
                 .then((response) => {
                     if (response.status == 200) {
-                        this.loadClientList();
+                        this.loadAgendaList();
                     }
                 })
                 .catch(error => { console.log(error) })
         }
       
     }
-    renderClienteData(clienteData) {
+    renderAgendaeData(clienteData) {
         return (
             <form id="modalcliente" onSubmit={this.handleSave}  >
-                <input type="hidden" name="uidCliente" value={clienteData.uidCliente} />
+                <input type="hidden" name="uidAgendae" value={clienteData.uidAgendae} />
                 <div className="form-group">
                     <label>*Nome:</label>
-                    <input type="text" className="form-control" name="nomeCliente" value={clienteData.nomeCliente} onChange={e => this.changeValue('nomeCliente', e.target.value)} required />
+                    <input type="text" className="form-control" name="nomeAgendae" value={clienteData.nomeAgendae} onChange={e => this.changeValue('nomeAgendae', e.target.value)} required />
                 </div>
                 <div className="form-group">
                     <label>*Telefone:</label>
@@ -167,7 +167,7 @@ export class ListaClientes extends Component {
             </form>
         )
     }
-    renderlistaclientesTable(listaclientes) {
+    renderlistaagendaTable(listaagenda) {
         return (
             <table className='table table-striped'>
                 <thead>
@@ -180,9 +180,9 @@ export class ListaClientes extends Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {listaclientes.map(cliente =>
-                        <tr key={cliente.uidCliente}>
-                            <td>{cliente.nomeCliente}</td>
+                    {listaagenda.map(cliente =>
+                        <tr key={cliente.uidAgendae}>
+                            <td>{cliente.nomeAgendae}</td>
                             <td>{cliente.ddd} - {cliente.telefone}</td>
                             <td>{cliente.email}</td>
                             <td>{cliente.datadeNascimento}</td>
@@ -190,10 +190,10 @@ export class ListaClientes extends Component {
                                 <a className="btn btn-icon btn-dark" data-toggle="tooltip" title="" data-original-title="Enviar SMS" alt="Enviar SMS">
                                     <i className="fa fa-comments"></i>
                                 </a>
-                                <a className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(cliente.uidCliente)} title="Atualizar Cliente" data-toggle="modal" data-target="#editarCliente">
+                                <a className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(cliente.uidAgendae)} title="Atualizar Agendae" data-toggle="modal" data-target="#editarAgendae">
                                     <i className="fas fa-pen"></i>
                                 </a>
-                                <a id="swal-6" className="btn btn-icon btn-danger" data-toggle="tooltip" onClick={(id) => this.handleDelete(cliente.uidCliente)} data-original-title="Deletar Clientes" alt="Deletar Clientes">
+                                <a id="swal-6" className="btn btn-icon btn-danger" data-toggle="tooltip" onClick={(id) => this.handleDelete(cliente.uidAgendae)} data-original-title="Deletar Agendaes" alt="Deletar Agendaes">
                                     <i className="fas fa-trash-alt"></i>
                                 </a>
                             </td>
@@ -208,32 +208,32 @@ export class ListaClientes extends Component {
     render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : this.renderlistaclientesTable(this.state.listaclientes);
+            : this.renderlistaagendaTable(this.state.listaagenda);
         let clienteRender = this.state.loadingcliente ? <p><em>Carregando...</em></p>
-            : this.renderClienteData(this.state.clienteData);
+            : this.renderAgendaeData(this.state.clienteData);
         return (
             <div >
                 <section className="section">
                     <div className="section-header">
-                        <h1><i className="fa fa-user-friends"></i> Clientes</h1>
+                        <h1><i className="fa fa-user-friends"></i> Agendaes</h1>
                         <div className="section-header-breadcrumb">
                             <div className="breadcrumb-item active"><a href="/dashboard">Dashboard</a></div>
-                            <div className="breadcrumb-item"><a href="/clientes">Clientes</a></div>
+                            <div className="breadcrumb-item"><a href="/clientes">Agendaes</a></div>
                         </div>
                     </div>
                     <p>
-                        <a to="#" data-toggle="modal" data-target="#editarCliente" onClick={() => { this.setState({ clienteData : this.ClienteData() }) }} >Adicionar cliente</a>
+                        <a to="#" data-toggle="modal" data-target="#editarAgendae" onClick={() => { this.setState({ clienteData : this.AgendaeData() }) }} >Adicionar cliente</a>
                     </p>
                     <div className="section-body">
                         {contents}
                     </div>
                 </section>
                 <div>
-                    <div className="modal fade" tabIndex="-1" role="dialog" id="editarCliente">
+                    <div className="modal fade" tabIndex="-1" role="dialog" id="editarAgendae">
                         <div className="modal-dialog" role="document">
                             <div className="modal-content">
                                 <div className="modal-header">
-                                    <h5 className="modal-title">Novo Cliente</h5>
+                                    <h5 className="modal-title">Novo Agendae</h5>
                                     <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>

@@ -64,7 +64,6 @@ namespace Lucra2020.Controllers
             var token = new JwtSecurityToken(
                     issuer: _config["Jwt:Issuer"],
                     audience: _config["Jwt:Issuer"],
-                    claims,
                     expires: DateTime.Now.AddMinutes(120),
                     signingCredentials: credentials);
             var encondetoken = new JwtSecurityTokenHandler().WriteToken(token);
