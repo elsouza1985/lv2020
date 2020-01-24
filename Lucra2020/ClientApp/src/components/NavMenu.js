@@ -8,8 +8,10 @@ import "../Content/css/style.css";
 import "../Content/css/components.css";
 import './NavMenu.css';
 
-import img1 from '../Content/img/lucra-mais-small.png';
+import img1 from '../Content/img/lucra-mais.png';
 import img2 from "../Content/img/lucra-mais-small.png";
+import img3 from '../Content/img/avatar/avatar-2.png';
+import img4 from "../Content/img/avatar/avatar-1.png";
 
 
 export class NavMenu extends Component {
@@ -20,69 +22,47 @@ export class NavMenu extends Component {
 
         this.toggleNavbar = this.toggleNavbar.bind(this);
         this.state = {
-            collapsed: true
+            collapsed: false,
+            userName: "Erick Souza"
         };
     }
 
-    toggleNavbar() {
+    toggleNavbar(e) {
+        e.preventDefault();
         this.setState({
             collapsed: !this.state.collapsed
         });
+        let body = document.getElementsByTagName('body')[0];
+        if (this.state.collapsed) {
+
+            try {
+                body.classList.add('sidebar-mini');
+            } catch (e) {
+
+            }
+        } else {
+            body.classList.remove('sidebar-mini');
+        }
     }
 
     render() {
+        let menuOpen = this.state.collapsed ? 'sidebar-mini' : '';
         return (
             <header>
 
                 <div className="main-wrapper main-wrapper-1">
                     <div className="navbar-bg"></div>
-                    <nav className="navbar navbar-expand-lg main-navbar">
+                    <nav className="navbar navbar-expand-lg main-navbar navbar-top">
                         <form className="form-inline mr-auto">
-                            <ul className="navbar-nav mr-3">
-                                <li><a href="#" data-toggle="sidebar" className="nav-link nav-link-lg"><i className="ion-android-menu"></i></a></li>
+                            <ul className="navbar-nav mr-3 list-unstyled">
+                                <li>
+                                    <a href="#" onClick={e => this.toggleNavbar(e)} data-toggle="sidebar" className="nav-link nav-link-lg">
+                                        <i className="ion-android-menu"></i>
+                                    </a>
+                                </li>
                             </ul>
                         </form>
-                        <ul className="navbar-nav navbar-right">
-                            <li className="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown" className="nav-link nav-link-lg message-toggle beep"><i className="far fa-envelope"></i><span className="btn-circle-header">3</span></a>
-                                <div className="dropdown-menu dropdown-list dropdown-menu-right">
-                                    <div className="dropdown-header">Mensagens
-              </div>
-                                    <div className="dropdown-list-content dropdown-list-message">
-                                        <a href="#" className="dropdown-item dropdown-item-unread">
-                                            <div className="dropdown-item-avatar">
-                                                <img alt="image" src="../Content/img/avatar/avatar-1.png" className="rounded-circle" />
-                                                <div className="is-online"></div>
-                                            </div>
-                                            <div className="dropdown-item-desc">
-                                                <b>Leandro</b>
-                                                <p>Hello, Brother!</p>
-                                                <div className="time">Há 5 minutos</div>
-                                            </div>
-                                        </a>
-                                        <a href="#" className="dropdown-item dropdown-item-unread">
-                                            <div className="dropdown-item-avatar">
-                                                <img alt="image" src="../Container/img/avatar/avatar-2.png" className="rounded-circle" />
-                                            </div>
-                                            <div className="dropdown-item-desc">
-                                                <b>Juliana</b>
-                                                <p>Hello, Brother!</p>
-                                                <div className="time">Há 5 minutos</div>
-                                            </div>
-                                        </a>
-                                        <a href="#" className="dropdown-item dropdown-item-unread">
-                                            <div className="dropdown-item-avatar">
-                                                <img alt="image" src="../Container/img/avatar/avatar-3.png" className="rounded-circle" />
-                                                <div className="is-online"></div>
-                                            </div>
-                                            <div className="dropdown-item-desc">
-                                                <b>Jorge</b>
-                                                <p>Hello, Brother!</p>
-                                                <div className="time">Há 5 minutos</div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
+                        <ul className="navbar-nav navbar-right list-unstyled">
                             <li className="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown" className="nav-link notification-toggle nav-link-lg beep"><i className="far fa-bell"></i><span className="btn-circle-header">2</span></a>
                                 <div className="dropdown-menu dropdown-list dropdown-menu-right">
                                     <div className="dropdown-header">Notificações
@@ -119,8 +99,8 @@ export class NavMenu extends Component {
                                 </div>
                             </li>
                             <li className="dropdown"><a href="#" data-toggle="dropdown" className="nav-link dropdown-toggle nav-link-lg nav-link-user">
-                                <img alt="image" src="../Content/img/avatar/avatar-1.png" className="rounded-circle mr-1" />
-                                <div className="d-sm-none d-lg-inline-block">Olá, Erick Souza</div></a>
+                                <img alt="image" src={img3} className="rounded-circle mr-1" />
+                                <div className="d-sm-none d-lg-inline-block">Ola, {this.state.userName}</div></a>
                                 <div className="dropdown-menu dropdown-menu-right">
                                     <div className="dropdown-title">Login 06/02/2019 às 22h15</div>
                                     <a href="features-profile.html" className="dropdown-item has-icon">
@@ -143,10 +123,10 @@ export class NavMenu extends Component {
                     <div className="main-sidebar sidebar-style-2">
                         <aside id="sidebar-wrapper">
                             <div className="sidebar-brand">
-                                <a href="dashboard.php"><img src={img1} alt="logo" width="50" height="50" /></a>
+                                <a href="/home"><img src={img1} alt="logo" width="140" height="50" /></a>
                             </div>
                             <div className="sidebar-brand sidebar-brand-sm">
-                                <a href="dashboard.php"><img src={img2} alt="logo" width="50" height="50" /></a>
+                                <a href="/home"><img src={img2} alt="logo" width="50" height="50" /></a>
                             </div>
                             <ul className="sidebar-menu">
                                 <li className="menu-header">Menu Principal</li>
@@ -154,7 +134,7 @@ export class NavMenu extends Component {
                                     <NavLink tag={Link} className="nav-link" to="/home"><i className="ion-speedometer"></i>  <span>Dashboard</span></NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink tag={Link} className="nav-link" to="/clientes"><i className="fa fa-user-friends"></i> <span>Clientes</span></NavLink>
+                                    <NavLink tag={Link} className="nav-link"  to="/clientes"><i className="fa fa-user-friends"></i> <span>Clientes</span></NavLink>
                                 </NavItem>
                                 <NavItem>
                                     <NavLink tag={Link} className="nav-link" to="/servicos"><i className="fa fa-briefcase"></i> <span>Serviços</span></NavLink>

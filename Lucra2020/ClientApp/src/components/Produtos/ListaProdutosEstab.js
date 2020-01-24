@@ -1,7 +1,7 @@
 ﻿import React, { Component, useState } from 'react';
 
 
-export class ListaProdutos extends Component {
+export class ListaProdutosEstab extends Component {
     static displayName = ListaProdutos.name;
    
 
@@ -19,7 +19,7 @@ export class ListaProdutos extends Component {
         this.handleDelete = this.handleDelete.bind(this);
         this.ProdutoData = this.ProdutoData.bind(this);
         this.formatMoeda = this.formatMoeda.bind(this);
-        this.loadProdutoList();
+       
         
     }
     loadProdutoList() {
@@ -36,23 +36,29 @@ export class ListaProdutos extends Component {
     }
     ProdutoData() {
         const produtoData = {
-            idProduto: undefined ,
+            uidProduto: undefined ,
             NomeProduto: "",
             EANProduto: "",
+            precoProdutoCompra: "",
+            precoProdutoVenda: "",
+            qtdEstoque:""
          }
         return produtoData;
     }
     handleSave(e) {
         e.preventDefault();
-        let idProduto = this.state.produtoData.idProduto;
+        let uidProduto = this.state.produtoData.uidProduto;
         const data = {
-            IdProduto: this.state.produtoData.idProduto,
+            IdProduto: this.state.produtoData.iudProduto,
             NomeProduto: document.getElementsByName('nomeProduto')[0].value,
-            EANProduto: document.getElementsByName('eanProduto')[0].value
+            EANProduto: document.getElementsByName('eanProduto')[0].value,
+            precoProdutoCompra: document.getElementsByName('precoProdutoCompra')[0].value,
+            precoProdutoVenda: document.getElementsByName('precoProdutoVenda')[0].value,
+            qtdEstoque: document.getElementsByName('qtdEstoque')[0].value
         }
-        // PUT solicitação para editar contato
-        if (idProduto) {
-            fetch('api/vwProdutos/' + idProduto, {
+        // PUT solicitação para editar 
+        if (uidProduto) {
+            fetch('api/vwProdutos/' + uidProduto, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -69,7 +75,7 @@ export class ListaProdutos extends Component {
                 }
             })
         }
-        else // POST requisição para adicionar contato
+        else // POST requisição para adicionar 
         {
             fetch('api/vwProdutos/', {
                 headers: {
@@ -128,14 +134,17 @@ export class ListaProdutos extends Component {
         }
       
     }
-
     renderprodutoData(produtoData) {
         return (
             <form  onSubmit={this.handleSave}  >
                 <input type="hidden" name="idProduto" value={produtoData.idProduto} />
                 <div className="form-group">
                     <label>*Nome:</label>
-                    <input type="text" className="form-control" name="nomeProduto" value={produtoData.nomeProduto} onChange={e => this.changeValue('nomeProduto', e.target.value)} required />
+                    <select className="form-control" name="nomeProduto" required >
+                        {produtoData.map(produto =>
+                            <option key={produto.uidProduto} value={produto.eanProduto}> {produto.nomeProduto} </option>
+                            )}
+                    </select>
                 </div>
                 <div className="form-group">
                     <label>Codigo do Produto</label>
@@ -170,7 +179,7 @@ export class ListaProdutos extends Component {
                 <thead>
                     <tr>
                         <th>Codigo</th>
-                        <th>Produto</th>
+                        <th>Nome</th>
                         <th>Preço Compra</th>
                         <th>Preço Venda</th>
                         <th>Estoque</th>

@@ -14,10 +14,27 @@ namespace Lucra2020.Controllers
     public class vwProdutosController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly Guid estab = new Guid("B7882E07-56A3-478E-A4C2-51125E471CAC");
 
         public vwProdutosController(AppDbContext context)
         {
             _context = context;
+        }
+        //Metodos para cliente estabelecimento
+        [HttpGet("LoadProdList")]
+        public async Task<ActionResult<IEnumerable<vwProdutoEstabelecimento>>> LoadProduto()
+        {
+            return await _context.ProdutoEstabelecimento.Where(x => x.UidEstabelecimento == estab).ToListAsync();
+        }
+
+        [HttpPost("ProdEstab")]
+        public async Task<ActionResult<vwProdutoEstabelecimento>> ProdEstab(vwProdutoEstabelecimento Produto)
+        {
+            _context.Entry(Produto).State = EntityState.Added;
+            //_context.Produto.Add(Produto);
+            await _context.SaveChangesAsync();
+
+            return Ok();//CreatedAtAction("GetvwProduto", new { id = Produto. }, Produto);
         }
 
         // GET: api/vwProdutos
@@ -68,17 +85,18 @@ namespace Lucra2020.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/vwProdutos
         [HttpPost]
-        public async Task<ActionResult<vwProduto>> PostvwProduto(vwProduto vwProduto)
+        public async Task<ActionResult<vwProduto>> PostvwProduto(vwProduto Produto)
         {
-            _context.Produto.Add(vwProduto);
+            _context.Entry(Produto).State = EntityState.Added;
+            //_context.Produto.Add(Produto);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetvwProduto", new { id = vwProduto.IdProduto }, vwProduto);
+            return CreatedAtAction("GetvwProduto", new { id = Produto.IdProduto }, Produto);
         }
 
         // DELETE: api/vwProdutos/5
