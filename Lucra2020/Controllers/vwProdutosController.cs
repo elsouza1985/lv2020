@@ -30,11 +30,25 @@ namespace Lucra2020.Controllers
         [HttpPost("ProdEstab")]
         public async Task<ActionResult<vwProdutoEstabelecimento>> ProdEstab(vwProdutoEstabelecimento Produto)
         {
+            Produto.UidEstabelecimento = estab;
             _context.Entry(Produto).State = EntityState.Added;
             //_context.Produto.Add(Produto);
             await _context.SaveChangesAsync();
 
             return Ok();//CreatedAtAction("GetvwProduto", new { id = Produto. }, Produto);
+        }
+        // GET: api/vwProdutos/5
+        [HttpGet("GetvwProdutoEstab/{id}")]
+        public async Task<ActionResult<vwProdutoEstabelecimento>> GetvwProdutoEstab(Guid id)
+        {
+            var vwProduto = await _context.ProdutoEstabelecimento.FindAsync(id);
+
+            if (vwProduto == null)
+            {
+                return NotFound();
+            }
+
+            return vwProduto;
         }
 
         // GET: api/vwProdutos
@@ -46,7 +60,7 @@ namespace Lucra2020.Controllers
 
         // GET: api/vwProdutos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<vwProduto>> GetvwProduto(int id)
+        public async Task<ActionResult<vwProduto>> GetvwProduto(Guid id)
         {
             var vwProduto = await _context.Produto.FindAsync(id);
 
@@ -60,9 +74,9 @@ namespace Lucra2020.Controllers
 
         // PUT: api/vwProdutos/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutvwProduto(int id, vwProduto vwProduto)
+        public async Task<IActionResult> PutvwProduto(Guid id, vwProduto vwProduto)
         {
-            if (id != vwProduto.IdProduto)
+            if (id != vwProduto.UidProduto)
             {
                 return BadRequest();
             }
@@ -90,13 +104,14 @@ namespace Lucra2020.Controllers
 
         // POST: api/vwProdutos
         [HttpPost]
-        public async Task<ActionResult<vwProduto>> PostvwProduto(vwProduto Produto)
+        public async Task<ActionResult<vwProduto>> PostvwProduto(vwProduto Prod)
         {
-            _context.Entry(Produto).State = EntityState.Added;
+            //Prod.UidProduto = 1;
+            _context.Entry<vwProduto>(Prod).State = EntityState.Added;
             //_context.Produto.Add(Produto);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetvwProduto", new { id = Produto.IdProduto }, Produto);
+            return CreatedAtAction("GetvwProduto", new { id = Prod.UidProduto }, Prod);
         }
 
         // DELETE: api/vwProdutos/5
@@ -115,9 +130,9 @@ namespace Lucra2020.Controllers
             return vwProduto;
         }
 
-        private bool vwProdutoExists(int id)
+        private bool vwProdutoExists(Guid id)
         {
-            return _context.Produto.Any(e => e.IdProduto == id);
+            return _context.Produto.Any(e => e.UidProduto == id);
         }
     }
 }

@@ -3,12 +3,12 @@
 
 export class ListaProdutos extends Component {
     static displayName = ListaProdutos.name;
-   
+
 
     constructor(props) {
-       
+
         super(props);
-        this.state = { ListaProdutos: [], loading: true, loadingcliente: false, produtoData:  [] };
+        this.state = { ListaProdutos: [], loading: true, loadingcliente: false, produtoData: [] };
 
 
         this.loadProdutoList = this.loadProdutoList.bind(this);
@@ -20,10 +20,10 @@ export class ListaProdutos extends Component {
         this.ProdutoData = this.ProdutoData.bind(this);
         this.formatMoeda = this.formatMoeda.bind(this);
         this.loadProdutoList();
-        
+
     }
     loadProdutoList() {
-        fetch('api/vwProdutos/LoadProdList', {
+        fetch('api/vwProdutos', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -36,23 +36,23 @@ export class ListaProdutos extends Component {
     }
     ProdutoData() {
         const produtoData = {
-            idProduto: undefined ,
+            uidProduto: undefined,
             NomeProduto: "",
             EANProduto: "",
-         }
+        }
         return produtoData;
     }
     handleSave(e) {
         e.preventDefault();
-        let idProduto = this.state.produtoData.idProduto;
+        let uidProduto = this.state.produtoData.uidProduto;
         const data = {
-            IdProduto: this.state.produtoData.idProduto,
+            uidProduto: this.state.produtoData.uidProduto,
             NomeProduto: document.getElementsByName('nomeProduto')[0].value,
             EANProduto: document.getElementsByName('eanProduto')[0].value
         }
         // PUT solicitação para editar contato
-        if (idProduto) {
-            fetch('api/vwProdutos/' + idProduto, {
+        if (uidProduto) {
+            fetch('api/vwProdutos/' + uidProduto, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -63,7 +63,7 @@ export class ListaProdutos extends Component {
                 if (response.status == 200) {
                     this.loadProdutoList();
                     document.getElementsByClassName('close')[0].click();
-                   // this.setState({ produtoData: undefined });
+                    // this.setState({ produtoData: undefined });
                 } else {
                     window.alert('Ocorreu um erro ao atualizar cadastro!');
                 }
@@ -77,14 +77,18 @@ export class ListaProdutos extends Component {
                 },
                 method: 'POST',
                 body: JSON.stringify(data),
-            }).then((response) => response.json())
-                .then((responseJson) => {
+            }).then((response) => {
+                if (response.status == 200) {
                     this.loadProdutoList();
                     this.setState({ produtoData: this.produtoData() })
                     document.getElementsByClassName('close')[0].click();
-                })
+                }
+            })
+                .catch(error => { console.log(error) })
+
+
         }
-       
+
     }
 
     handleEdit(id) {
@@ -126,13 +130,13 @@ export class ListaProdutos extends Component {
                 })
                 .catch(error => { console.log(error) })
         }
-      
+
     }
 
     renderprodutoData(produtoData) {
         return (
-            <form  onSubmit={this.handleSave}  >
-                <input type="hidden" name="idProduto" value={produtoData.idProduto} />
+            <form onSubmit={this.handleSave}  >
+                <input type="hidden" name="uidProduto" value={produtoData.uidProduto} />
                 <div className="form-group">
                     <label>*Nome:</label>
                     <input type="text" className="form-control" name="nomeProduto" value={produtoData.nomeProduto} onChange={e => this.changeValue('nomeProduto', e.target.value)} required />
@@ -141,7 +145,7 @@ export class ListaProdutos extends Component {
                     <label>Codigo do Produto</label>
                     <input type="number" className="form-control" name="eanProduto" onChange={e => this.changeValue('eanProduto', e.target.value)} value={produtoData.eanProduto} />
                 </div>
-               
+
                 <div className="modal-footer bg-whitesmoke br">
                     <button type="submit" className="btn btn-primary" id="swal-2">Salvar</button>
                     <button type="button" className="btn btn-secondary" data-dismiss="modal">Fechar</button>
@@ -154,7 +158,7 @@ export class ListaProdutos extends Component {
 
         changedot = 'R$' + changedot;
         if (changedot.indexOf(',') > -1) {
-            let decimal = changedot.substring(changedot.indexOf(',')+1, changedot.length);
+            let decimal = changedot.substring(changedot.indexOf(',') + 1, changedot.length);
             if (decimal.length == 1) {
                 changedot = changedot + '0';
             }
@@ -179,17 +183,17 @@ export class ListaProdutos extends Component {
                 </thead>
                 <tbody>
                     {ListaProdutos.map(produto =>
-                        <tr key={produto.uidProduto}>
+                        <tr key={produto.uuidProduto}>
                             <td>{produto.eanProduto}</td>
                             <td>{produto.nomeProduto}</td>
                             <td>{this.formatMoeda(produto.precoProdutoCompra)}</td>
                             <td>{this.formatMoeda(produto.precoProdutoVenda)}</td>
                             <td>{produto.qtdEstoque}</td>
                             <td className="align-middle">
-                                <a className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(produto.idProduto)} title="Atualizar produto" data-toggle="modal" data-target="#editarCliente">
+                                <a className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(produto.uidProduto)} title="Atualizar produto" data-toggle="modal" data-target="#editarCliente">
                                     <i className="fas fa-pen"></i>
                                 </a>
-                                <a id="swal-6" className="btn btn-icon btn-danger" data-toggle="tooltip" onClick={(id) => this.handleDelete(produto.idProduto)} data-original-title="Deletar Clientes" alt="Deletar Clientes">
+                                <a id="swal-6" className="btn btn-icon btn-danger" data-toggle="tooltip" onClick={(id) => this.handleDelete(produto.uidProduto)} data-original-title="Deletar Clientes" alt="Deletar Clientes">
                                     <i className="fas fa-trash-alt"></i>
                                 </a>
                             </td>
@@ -211,14 +215,14 @@ export class ListaProdutos extends Component {
                 </thead>
                 <tbody>
                     {ListaProdutos.map(produto =>
-                        <tr key={produto.idProduto}>
+                        <tr key={produto.uidProduto}>
                             <td>{produto.nomeProduto}</td>
                             <td>{produto.eanProduto}</td>
                             <td className="align-middle">
-                                <a className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(produto.idProduto)} title="Atualizar Cliente" data-toggle="modal" data-target="#editarCliente">
+                                <a className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(produto.uidProduto)} title="Atualizar Cliente" data-toggle="modal" data-target="#editarCliente">
                                     <i className="fas fa-pen"></i>
                                 </a>
-                                <a id="swal-6" className="btn btn-icon btn-danger" data-toggle="tooltip" onClick={(id) => this.handleDelete(produto.idProduto)} data-original-title="Deletar Clientes" alt="Deletar Clientes">
+                                <a id="swal-6" className="btn btn-icon btn-danger" data-toggle="tooltip" onClick={(id) => this.handleDelete(produto.uidProduto)} data-original-title="Deletar Clientes" alt="Deletar Clientes">
                                     <i className="fas fa-trash-alt"></i>
                                 </a>
                             </td>
@@ -233,7 +237,7 @@ export class ListaProdutos extends Component {
     render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : this.renderListaProdutosEstabTable(this.state.ListaProdutos);
+            : this.renderListaProdutosTable(this.state.ListaProdutos);
         let clienteRender = this.state.loadingcliente ? <p><em>Carregando...</em></p>
             : this.renderprodutoData(this.state.produtoData);
         return (
@@ -247,7 +251,7 @@ export class ListaProdutos extends Component {
                         </div>
                     </div>
                     <p>
-                        <button data-toggle="modal" data-target="#editarCliente" onClick={() => { this.setState({ produtoData : this.ProdutoData() }) }} >+Produto</button>
+                        <button data-toggle="modal" data-target="#editarCliente" onClick={() => { this.setState({ produtoData: this.ProdutoData() }) }} >+Produto</button>
                     </p>
                     <div className="section-body">
                         {contents}

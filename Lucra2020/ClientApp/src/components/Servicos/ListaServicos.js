@@ -1,7 +1,7 @@
-﻿import React, { Component, useState } from 'react';
+﻿import React, { Component } from 'react';
 
 
-export class ListaClientes extends Component {
+export class ListaServicos extends Component {
     static displayName = ListaClientes.name;
    
 
