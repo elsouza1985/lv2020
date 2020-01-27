@@ -101,7 +101,7 @@ export class ListaProdutosEstab extends Component {
                     console.log(response)
                     if (response.status == 200) {
                         this.loadProdutoList(1);
-                        this.setState({ produtoData: this.produtoData() })
+                        this.setState({ produtoData: [] })
                         document.getElementsByClassName('close')[0].click();
                     }
             })

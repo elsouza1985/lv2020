@@ -40,7 +40,7 @@ namespace Lucra2020.Controllers
             }
             vwServicoEstabelecimento.Produtos = await _context
                 .ServicoProdutos
-                .Where(a => a.UidServicoEstabalecimento == vwServicoEstabelecimento.UidServicoEstabalecimento).ToListAsync();
+                .Where(a => a.UidServicoEstabalecimento == vwServicoEstabelecimento.UidEstabelecimento).ToListAsync();
             return vwServicoEstabelecimento;
         }
 
@@ -48,7 +48,7 @@ namespace Lucra2020.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutvwServicoEstabelecimento(Guid id, vwServicoEstabelecimento vwServicoEstabelecimento)
         {
-            if (id != vwServicoEstabelecimento.UidServicoEstabalecimento)
+            if (id != vwServicoEstabelecimento.UidServicoEstabelecimento)
             {
                 return BadRequest();
             }
@@ -80,16 +80,16 @@ namespace Lucra2020.Controllers
         {
             
             _context.Servico.Add(vwServicoEstabelecimento);
-            
+
             await _context.SaveChangesAsync();
             foreach (var item in vwServicoEstabelecimento.Produtos)
             {
-                item.UidServicoEstabalecimento = vwServicoEstabelecimento.UidServicoEstabalecimento;
+                item.UidServicoEstabalecimento = vwServicoEstabelecimento.UidServicoEstabelecimento;
             }
             _context.ServicoProdutos.AddRange(vwServicoEstabelecimento.Produtos);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetvwServicoEstabelecimento", new { id = vwServicoEstabelecimento.UidServicoEstabalecimento }, vwServicoEstabelecimento);
+            return CreatedAtAction("GetvwServicoEstabelecimento", new { id = vwServicoEstabelecimento.UidServicoEstabelecimento }, vwServicoEstabelecimento);
         }
 
         // DELETE: api/vwServicoEstabelecimento/5
@@ -101,7 +101,7 @@ namespace Lucra2020.Controllers
             {
                 return NotFound();
             }
-            _context.ServicoProdutos.RemoveRange(vwServicoEstabelecimento.Produtos);
+            //_context.ServicoProdutos.RemoveRange(vwServicoEstabelecimento.Produtos);
             _context.Servico.Remove(vwServicoEstabelecimento);
             await _context.SaveChangesAsync();
 
@@ -110,7 +110,7 @@ namespace Lucra2020.Controllers
 
         private bool vwServicoEstabelecimentoExists(Guid id)
         {
-            return _context.Servico.Any(e => e.UidServicoEstabalecimento == id);
+            return _context.Servico.Any(e => e.UidServicoEstabelecimento == id);
         }
     }
 }

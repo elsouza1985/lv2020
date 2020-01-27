@@ -7,17 +7,18 @@ using System.Threading.Tasks;
 
 namespace Lucra2020.Models
 {
-    [Table("ServicoEstabelecimento", Schema ="dbo")]
+    [Table("ServicoEstabelecimento", Schema = "dbo")]
     public class vwServicoEstabelecimento
     {
         [Key]
-        public Guid UidServicoEstabalecimento { get; set; }
+        public Guid UidServicoEstabelecimento { get; set; }
         public Guid UidEstabelecimento { get; set; }
-      public string NomeServico { get; set; }
-      public string UnidadeDeMedida { get; set; }
-      public string TipoDeUnidadeDeMedida { get; set; }
-      public int QtdTempo { get; set; }
-      public decimal ValorServico { get; set; }
+        public string NomeServico { get; set; }
+        public string UnidadeMedida { get; set; }
+        public string TipoDeUnidadeMedida { get; set; }
+        public Byte QtdTempo { get; set; }
+        public decimal ValorServico { get; set; }
         public List<vwServicoEstabelecimentoProduto> Produtos { get; set; }
+
     }
 }
