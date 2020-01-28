@@ -40,7 +40,7 @@ namespace Lucra2020.Controllers
             }
             vwServicoEstabelecimento.Produtos = await _context
                 .ServicoProdutos
-                .Where(a => a.UidServicoEstabalecimento == vwServicoEstabelecimento.UidEstabelecimento).ToListAsync();
+                .Where(a => a.UidServicoEstabelecimento == vwServicoEstabelecimento.UidEstabelecimento).ToListAsync();
             return vwServicoEstabelecimento;
         }
 
@@ -84,7 +84,7 @@ namespace Lucra2020.Controllers
             await _context.SaveChangesAsync();
             foreach (var item in vwServicoEstabelecimento.Produtos)
             {
-                item.UidServicoEstabalecimento = vwServicoEstabelecimento.UidServicoEstabelecimento;
+                item.UidServicoEstabelecimento = vwServicoEstabelecimento.UidServicoEstabelecimento;
             }
             _context.ServicoProdutos.AddRange(vwServicoEstabelecimento.Produtos);
             await _context.SaveChangesAsync();

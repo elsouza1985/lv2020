@@ -3,12 +3,12 @@
 
 export class ListaServicos extends Component {
     static displayName = ListaServicos.name;
-   
+
 
     constructor(props) {
-       
+
         super(props);
-        this.state = { listaServicos: [], loading: true, loadingServico: false, ServicoData:  [] };
+        this.state = { listaServicos: [], loading: true, loadingServico: false, ServicoData: [], produtoList: [], selectedProdutoList: [] };
 
 
         this.loadServicoList = this.loadServicoList.bind(this);
@@ -33,7 +33,7 @@ export class ListaServicos extends Component {
     }
     ServicoData() {
         const ServicoData = {
-            uidServico: undefined ,
+            uidServico: undefined,
             nomeServico: "",
             ddd: "",
             telefone: "",
@@ -41,6 +41,20 @@ export class ListaServicos extends Component {
             datadeNascimento: ""
         }
         return ServicoData;
+    }
+    addtableProduct() {
+        let selectVal = document.getElementById('ddrProduto');
+        let idproduto = selectVal.options[selectVal.selectedIndex].value
+        fetch('api/vwProdutos/GetvwProdutoEstab/' + idproduto, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                this.setState({ produtoList: data });
+            });
     }
     handleSave(e) {
         e.preventDefault();
@@ -55,7 +69,7 @@ export class ListaServicos extends Component {
         }
         // PUT solicitação para editar contato
         if (ServicoID) {
-            fetch('api/vwServicos/' + ServicoID, {
+            fetch('api/vwServicoEstabelecimento' + ServicoID, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -65,10 +79,10 @@ export class ListaServicos extends Component {
                 console.log(response)
                 if (response.status == 200) {
                     this.loadServicoList();
-                    
-                    
+
+
                     document.getElementsByClassName('close')[0].click();
-                   // this.setState({ ServicoData: undefined });
+                    // this.setState({ ServicoData: undefined });
                 } else {
                     window.alert('Ocorreu um erro ao atualizar cadastro!');
                 }
@@ -76,7 +90,7 @@ export class ListaServicos extends Component {
         }
         else // POST requisição para adicionar contato
         {
-            fetch('api/vwServicos/', {
+            fetch('api/vwServicoEstabelecimento', {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -89,12 +103,12 @@ export class ListaServicos extends Component {
                     document.getElementsByClassName('close')[0].click();
                 })
         }
-       
+
     }
 
     handleEdit(id) {
 
-        fetch('http://localhost:49929/api/vwServicos/' + id, {
+        fetch('api/vwServicoEstabelecimento/' + id, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -105,6 +119,16 @@ export class ListaServicos extends Component {
                 this.setState({ titulo: "Editar", carregando: false, ServicoData: data });
                 console.log(data);
             }).catch(error => { console.log(error) });
+        fetch('api/vwProdutos/LoadProdList', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                this.setState({ produtoList: data });
+            });
     }
     changeValue(prop, value) {
         this.setState(prevState => ({
@@ -118,7 +142,7 @@ export class ListaServicos extends Component {
     handleDelete(id) {
 
         if (window.confirm('Esta ação irá apagar o registro, confirma?')) {
-            fetch('http://localhost:49929/api/vwServicos/' + id, {
+            fetch('api/vwServicoEstabelecimento/' + id, {
                 method: "DELETE",
                 headers: {
                     'Content-Type': 'application/json',
@@ -131,35 +155,76 @@ export class ListaServicos extends Component {
                 })
                 .catch(error => { console.log(error) })
         }
-      
+
     }
-    renderServicoData(ServicoData) {
+    renderServicoData(ServicoData, produtoList) {
         return (
             <form id="modalServico" onSubmit={this.handleSave}  >
                 <input type="hidden" name="uidServico" value={ServicoData.uidServico} />
                 <div className="form-group">
-                    <label>*Serviço:</label>
-                    <input type="text" className="form-control" name="nomeServico" value={ServicoData.nomeServico} onChange={e => this.changeValue('nomeServico', e.target.value)} required />
+                    <div className="row">
+                        <label>*Serviço:</label>
+                    </div>
+                    <div className="row">
+                        <input type="text" className="form-control" name="nomeServico" value={ServicoData.nomeServico} onChange={e => this.changeValue('nomeServico', e.target.value)} required />
+                    </div>
                 </div>
                 <div className="form-group">
                     <label>*Tempo Médio:</label>
                     <div className="row">
-                        <div className="form-group col-3">
-                            <input type="text" className="form-control" name="qtdTempo" onChange={e => this.changeValue('ddd', e.target.value)} value={ServicoData.qtdTempo} required />
+                        <div className=" col-sm-3">
+                            <input type="number" className="form-control" name="qtdTempo" onChange={e => this.changeValue('qtdTempo', e.target.value)} value={ServicoData.qtdTempo} required />
                         </div>
-                        <div className="form-group col-9">
-                            <input type="text" className="form-control" name="unidadeMedida" onChange={e => this.changeValue('unidadeMedida', e.target.value)} value={ServicoData.unidadeMedida} required />
+                        <div className="col-sm-9">
+                            <select className="form-control" name="unidadeMedida" onChange={e => this.changeValue('unidadeMedida', e.target.value)} value={ServicoData.unidadeMedida} required>
+                                <option value="Minuto">Minuto</option>
+                                <option value="Hora">Hora</option>
+                            </select>
                         </div>
                     </div>
                 </div>
-                
                 <div className="form-group">
-                    <label>Produtos:</label>
-                    <table id="tblProdutos" className="Table">
-                        <th>Produto</th>
-                        <th>Qtd</th>
-                        <th>Custo</th>
-                    </table>
+                    <div className="row">
+                        <label>Produtos:</label>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-11">
+                    <select id="ddrProdutos" className="form-control">
+                        <option value="0">Selecione...</option>
+                        {produtoList.map(produto =>
+                            <option value={produto.eanProduto}> {produto.nomeProduto} </option>
+                        )}
+
+                            </select>
+                        </div>
+                        <div className="col-sm-1 mr-3">
+                            <button className="btn btn-success"><i class="fas fa-plus-circle"></i></button>
+                        </div>
+                    </div>
+                 <div className="space-1">
+                        <table id="tblProdutos" className="table table-striped">
+                        <thead className="thead-light">
+                            <tr>
+                                <th>Produto</th>
+                                <th>Qtd</th>
+                                <th>Custo(R$)</th>
+                                <th>Remover</th>
+                            </tr>
+                        </thead>
+                        <tr scope="row">
+                                <td className=" col-sm-6"><label className="form-control">Navalha</label></td>
+                                <td className="col-sm-2"><input className="form-control" value="1" /></td>
+                                <td className=" col-sm-3"><input className="form-control" value="2.50" /></td>
+                                <td className="col-sm-1"><button className="btn btn-danger "><i className="fa fa-trash"></i></button></td>
+                            </tr>
+                            <tr scope="row">
+                                <td ><label className="form-control">Shampoo</label></td>
+                                <td className="col-sm-3"><input className="form-control" value="0.1" /></td>
+                                <td className=" col-sm-3"><input className="form-control" value="0.50" /></td>
+                                <td className="col-sm-1"><button className="btn btn-danger "><i className="fa fa-trash"></i></button></td>
+                            </tr>
+                        </table>
+                   </div>
                 </div>
                 <div className="form-group">
                     <label>Valor:</label>
@@ -213,7 +278,7 @@ export class ListaServicos extends Component {
             ? <p><em>Loading...</em></p>
             : this.renderlistaServicosTable(this.state.listaServicos);
         let ServicoRender = this.state.loadingServico ? <p><em>Carregando...</em></p>
-            : this.renderServicoData(this.state.ServicoData);
+            : this.renderServicoData(this.state.ServicoData, this.state.produtoList);
         return (
             <div >
                 <section className="section">
@@ -225,7 +290,7 @@ export class ListaServicos extends Component {
                         </div>
                     </div>
                     <p>
-                        <a to="#" data-toggle="modal" data-target="#editarServico" onClick={() => { this.setState({ ServicoData : this.ServicoData() }) }} >Adicionar Servico</a>
+                        <a to="#" data-toggle="modal" data-target="#editarServico" onClick={() => { this.setState({ ServicoData: this.ServicoData() }) }} >Adicionar Servico</a>
                     </p>
                     <div className="section-body">
                         {contents}
