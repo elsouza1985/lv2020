@@ -78,7 +78,7 @@ export class ListaProdutos extends Component {
                 method: 'POST',
                 body: JSON.stringify(data),
             }).then((response) => {
-                if (response.status == 200) {
+                if (response.status == 200 || response.status == 201) {
                     this.loadProdutoList();
                     this.setState({ produtoData: this.produtoData() })
                     document.getElementsByClassName('close')[0].click();

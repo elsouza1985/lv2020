@@ -106,12 +106,21 @@ namespace Lucra2020.Controllers
         [HttpPost]
         public async Task<ActionResult<vwProduto>> PostvwProduto(vwProduto Prod)
         {
-            //Prod.UidProduto = 1;
-            _context.Entry<vwProduto>(Prod).State = EntityState.Added;
-            //_context.Produto.Add(Produto);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Entry<vwProduto>(Prod).State = EntityState.Added;
+                //_context.Produto.Add(Produto);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetvwProduto", new { id = Prod.UidProduto }, Prod);
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return NotFound();
+            }
+            //Prod.UidProduto = 1;
+         
         }
 
         // DELETE: api/vwProdutos/5

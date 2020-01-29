@@ -60,13 +60,39 @@ export class ListaServicos extends Component {
     handleSave(e) {
         e.preventDefault();
         let ServicoID = this.state.ServicoData.uidServicoEstabelecimento;
+        let produto = {
+            uidServicoEstabelecimento: ""
+            , UidProdutoEstabelecimento: ""
+            , UnidadeMedida: ""
+            , QtdProdutoServico: ""
+            , ValorProdutoServico: ""
+        }
+        const produtoList = new Array();
+
+        produtoList.push({
+            UidProdutoEstabelecimento: 'F779ABBA-4616-48B5-8FE5-30084798ACEE'
+            , UidServicoEstabelecimento: '458553A0-71A6-4630-9FA2-1FE489340607'
+            , UnidadeMedida: "mL"
+            , QtdProdutoServico: "100"
+            , ValorProdutoServico: "1.53"
+        },  {
+             UidProdutoEstabelecimento: 'A060D653-D8C8-4DFB-BD84-D02F8FDC1F67'
+                , UidServicoEstabelecimento: '458553A0-71A6-4630-9FA2-1FE489340607'
+            , UnidadeMedida: "mL"
+            , QtdProdutoServico: "150"
+            , ValorProdutoServico: "3.35"
+        },
+        )
+        
+        
         const data = {
             UidServicoEstabelecimento: this.state.ServicoData.uidServicoEstabelecimento,
             NomeServico: document.getElementsByName('nomeServico')[0].value,
             QtdTempo: document.getElementsByName('qtdTempo')[0].value,
             UnidadeMedida: document.getElementsByName('UnidadeMedida')[0].options[document.getElementsByName('UnidadeMedida')[0].selectedIndex].value,
             TipoUnidadeMedida: 'Tempo',
-            ValorServico: document.getElementsByName('valorServico')[0].value
+            ValorServico: document.getElementsByName('valorServico')[0].value,
+            Produtos: produtoList
         }
         // PUT solicitação para editar contato
         if (ServicoID) {

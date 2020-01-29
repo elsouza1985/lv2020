@@ -18,7 +18,7 @@ namespace Lucra2020.Models
         public string TipoUnidadeMedida { get; set; }
         public Byte QtdTempo { get; set; }
         public decimal ValorServico { get; set; }
-        public List<vwServicoEstabelecimentoProduto> Produtos { get; set; }
+        public virtual ICollection<vwServicoEstabelecimentoProduto> Produtos { get; set; }
 
     }
 }
