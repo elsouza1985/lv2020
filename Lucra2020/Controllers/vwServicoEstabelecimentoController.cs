@@ -48,6 +48,7 @@ namespace Lucra2020.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutvwServicoEstabelecimento(Guid id, vwServicoEstabelecimento vwServicoEstabelecimento)
         {
+            vwServicoEstabelecimento.UidEstabelecimento = estab;
             if (id != vwServicoEstabelecimento.UidServicoEstabelecimento)
             {
                 return BadRequest();
@@ -78,18 +79,23 @@ namespace Lucra2020.Controllers
         [HttpPost]
         public async Task<ActionResult<vwServicoEstabelecimento>> PostvwServicoEstabelecimento(vwServicoEstabelecimento vwServicoEstabelecimento)
         {
-            
+            vwServicoEstabelecimento.UidEstabelecimento = estab;
+
             _context.Servico.Add(vwServicoEstabelecimento);
 
             await _context.SaveChangesAsync();
-            foreach (var item in vwServicoEstabelecimento.Produtos)
+            
+            if (vwServicoEstabelecimento.Produtos!= null)
             {
-                item.UidServicoEstabelecimento = vwServicoEstabelecimento.UidServicoEstabelecimento;
+                foreach (vwServicoEstabelecimentoProduto item in vwServicoEstabelecimento.Produtos)
+                {
+                    item.UidServicoEstabelecimento = vwServicoEstabelecimento.UidServicoEstabelecimento;
+                }
+                _context.ServicoProdutos.AddRange(vwServicoEstabelecimento.Produtos);
+                await _context.SaveChangesAsync();
             }
-            _context.ServicoProdutos.AddRange(vwServicoEstabelecimento.Produtos);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetvwServicoEstabelecimento", new { id = vwServicoEstabelecimento.UidServicoEstabelecimento }, vwServicoEstabelecimento);
+            return Ok();//CreatedAtAction("GetvwServicoEstabelecimento", new { id = vwServicoEstabelecimento.UidServicoEstabelecimento }, vwServicoEstabelecimento);
         }
 
         // DELETE: api/vwServicoEstabelecimento/5

@@ -15,7 +15,7 @@ namespace Lucra2020.Models
         public Guid UidEstabelecimento { get; set; }
         public string NomeServico { get; set; }
         public string UnidadeMedida { get; set; }
-        public string TipoDeUnidadeMedida { get; set; }
+        public string TipoUnidadeMedida { get; set; }
         public Byte QtdTempo { get; set; }
         public decimal ValorServico { get; set; }
         public List<vwServicoEstabelecimentoProduto> Produtos { get; set; }

@@ -47,10 +47,13 @@ export class ListaClientes extends Component {
     handleSave(e) {
         e.preventDefault();
         let clientID = this.state.clienteData.uidCliente;
+        let numberPattern = /\d+/g;
+        let telefone = document.getElementsByName('telefone')[0].value.match(numberPattern);
+        telefone = telefone.length > 1 ? telefone.join('') : telefone;
         const data = {
             UidCliente: this.state.clienteData.uidCliente,
             NomeCliente: document.getElementsByName('nomeCliente')[0].value,
-            Telefone: document.getElementsByName('telefone')[0].value,
+            Telefone: telefone,
             Email: document.getElementsByName('email')[0].value,
             DDD: document.getElementsByName('ddd')[0].value,
             DataDeNascimento: document.getElementsByName('dataDeNascimento')[0].value
@@ -84,12 +87,15 @@ export class ListaClientes extends Component {
                 },
                 method: 'POST',
                 body: JSON.stringify(data),
-            }).then((response) => response.json())
-                .then((responseJson) => {
+            }).then((response) => {
+                if (response.status == 200 || response.status == 201) {
                     this.loadClientList();
                     this.setState({ clienteData: this.ClienteData() })
                     document.getElementsByClassName('close')[0].click();
-                })
+                } else {
+                    alert('Ocorreu um erro ao criar o registro\nErro:' + response.statusText);
+                }
+            }).catch(error => { console.log(error) });
         }
        
     }
@@ -146,10 +152,10 @@ export class ListaClientes extends Component {
                 <div className="form-group">
                     <label>*Telefone:</label>
                     <div className="row">
-                        <div className="col-3">
+                        <div className="col-sm-2">
                             <input type="text" className="form-control" name="ddd" onChange={e => this.changeValue('ddd', e.target.value)} value={clienteData.ddd} required maxLength={2} />
                         </div>
-                        <div className="col-9">
+                        <div className="col-sm-10">
                             <input type="text" className="form-control" name="telefone" onChange={e => this.changeValue('telefone', e.target.value)} value={clienteData.telefone} required />
                         </div>
                     </div>

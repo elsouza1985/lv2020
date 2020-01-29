@@ -63,7 +63,10 @@ export class NavMenu extends Component {
                             </ul>
                         </form>
                         <ul className="navbar-nav navbar-right list-unstyled">
-                            <li className="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown" className="nav-link notification-toggle nav-link-lg beep"><i className="far fa-bell"></i><span className="btn-circle-header">2</span></a>
+                            <li className="dropdown dropdown-list-toggle">
+                                <a href="#" data-toggle="dropdown" className="nav-link notification-toggle nav-link-lg beep">
+                                    <i className="far fa-bell"></i><span className="btn-circle-header">2</span>
+                                </a>
                                 <div className="dropdown-menu dropdown-list dropdown-menu-right">
                                     <div className="dropdown-header">Notificações
               </div>
@@ -123,15 +126,15 @@ export class NavMenu extends Component {
                     <div className="main-sidebar sidebar-style-2">
                         <aside id="sidebar-wrapper">
                             <div className="sidebar-brand">
-                                <a href="/home"><img src={img1} alt="logo" width="140" height="50" /></a>
+                                <a href="/" onClick={e => this.toggleNavbar(e)}><img src={img1} alt="logo" width="140" height="50" /></a>
                             </div>
                             <div className="sidebar-brand sidebar-brand-sm">
-                                <a href="/home"><img src={img2} alt="logo" width="50" height="50" /></a>
+                                <a href="/" onClick={e => this.toggleNavbar(e)}><img src={img2} alt="logo" width="50" height="50" /></a>
                             </div>
                             <ul className="sidebar-menu">
                                 <li className="menu-header">Menu Principal</li>
                                 <NavItem>
-                                    <NavLink tag={Link} className="nav-link" to="/home"><i className="ion-speedometer"></i>  <span>Dashboard</span></NavLink>
+                                    <NavLink tag={Link} className="nav-link" to="/"><i className="ion-speedometer"></i>  <span>Dashboard</span></NavLink>
                                 </NavItem>
                                 <NavItem>
                                     <NavLink tag={Link} className="nav-link"  to="/clientes"><i className="fa fa-user-friends"></i> <span>Clientes</span></NavLink>
@@ -146,7 +149,7 @@ export class NavMenu extends Component {
                                     <NavLink tag={Link} className="nav-link" to="/produtosestab"><i className="fa fa-clipboard-list"></i> <span>Produtos Estab</span></NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink tag={Link} className="nav-link" to="/servicos"><i class="fa fa-hand-scissors"></i> <span>Serviços</span></NavLink>
+                                    <NavLink tag={Link} className="nav-link" to="/servicos"><i className="fa fa-hand-scissors"></i> <span>Serviços</span></NavLink>
                                 </NavItem>
                                 <NavItem>
                                     <NavLink tag={Link} className="nav-link" to="/vendas"><i className="fa fa-shopping-cart"></i> <span>Vendas</span></NavLink>

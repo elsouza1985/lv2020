@@ -8,7 +8,7 @@ export class ListaServicos extends Component {
     constructor(props) {
 
         super(props);
-        this.state = { listaServicos: [], loading: true, loadingServico: false, ServicoData: [], produtoList: [], selectedProdutoList: [] };
+        this.state = { listaServicos: [], loading: true, loadingServico: false, ServicoData: new this.ServicoData(), produtoList: [], selectedProdutoList: [] };
 
 
         this.loadServicoList = this.loadServicoList.bind(this);
@@ -33,12 +33,13 @@ export class ListaServicos extends Component {
     }
     ServicoData() {
         const ServicoData = {
-            uidServico: undefined,
+            uidServicoEstabelecimento: undefined,
             nomeServico: "",
-            ddd: "",
-            telefone: "",
-            email: "",
-            datadeNascimento: ""
+            qtdTempo: "",
+            unidadeMedida: "",
+            produtos: [],
+            valorServico:""
+
         }
         return ServicoData;
     }
@@ -58,14 +59,14 @@ export class ListaServicos extends Component {
     }
     handleSave(e) {
         e.preventDefault();
-        let ServicoID = this.state.ServicoData.uidServico;
+        let ServicoID = this.state.ServicoData.uidServicoEstabelecimento;
         const data = {
-            UidServico: this.state.ServicoData.uidServico,
+            UidServicoEstabelecimento: this.state.ServicoData.uidServicoEstabelecimento,
             NomeServico: document.getElementsByName('nomeServico')[0].value,
-            Telefone: document.getElementsByName('telefone')[0].value,
-            Email: document.getElementsByName('email')[0].value,
-            DDD: document.getElementsByName('ddd')[0].value,
-            DataDeNascimento: document.getElementsByName('dataDeNascimento')[0].value
+            QtdTempo: document.getElementsByName('qtdTempo')[0].value,
+            UnidadeMedida: document.getElementsByName('UnidadeMedida')[0].options[document.getElementsByName('UnidadeMedida')[0].selectedIndex].value,
+            TipoUnidadeMedida: 'Tempo',
+            ValorServico: document.getElementsByName('valorServico')[0].value
         }
         // PUT solicitação para editar contato
         if (ServicoID) {
@@ -77,10 +78,8 @@ export class ListaServicos extends Component {
                 body: JSON.stringify(data),
             }).then((response) => {
                 console.log(response)
-                if (response.status == 200) {
+                if (response.status == 200|| response.status == 201) {
                     this.loadServicoList();
-
-
                     document.getElementsByClassName('close')[0].click();
                     // this.setState({ ServicoData: undefined });
                 } else {
@@ -96,12 +95,16 @@ export class ListaServicos extends Component {
                 },
                 method: 'POST',
                 body: JSON.stringify(data),
-            }).then((response) => response.json())
-                .then((responseJson) => {
+            }).then((response) => {
+                console.log(response)
+                if (response.status == 200 || response.status == 201) {
                     this.loadServicoList();
-                    this.setState({ ServicoData: this.ServicoData() })
                     document.getElementsByClassName('close')[0].click();
-                })
+                    // this.setState({ ServicoData: undefined });
+                } else {
+                    window.alert('Ocorreu um erro ao criar o cadastro\nErro:'+response.statusText);
+                }
+            });
         }
 
     }
@@ -176,7 +179,7 @@ export class ListaServicos extends Component {
                             <input type="number" className="form-control" name="qtdTempo" onChange={e => this.changeValue('qtdTempo', e.target.value)} value={ServicoData.qtdTempo} required />
                         </div>
                         <div className="col-sm-9">
-                            <select className="form-control" name="unidadeMedida" onChange={e => this.changeValue('unidadeMedida', e.target.value)} value={ServicoData.unidadeMedida} required>
+                            <select className="form-control" name="UnidadeMedida" onChange={e => this.changeValue('UnidadeMedida', e.target.value)} value={ServicoData.unidadeMedida} required>
                                 <option value="Minuto">Minuto</option>
                                 <option value="Hora">Hora</option>
                             </select>
@@ -213,8 +216,8 @@ export class ListaServicos extends Component {
                         </thead>
                         <tr scope="row">
                                 <td className=" col-sm-6"><label className="form-control">Navalha</label></td>
-                                <td className="col-sm-2"><input className="form-control" value="1" /></td>
-                                <td className=" col-sm-3"><input className="form-control" value="2.50" /></td>
+                                <td className="col-sm-2"><input className="form-control" defaultValue="1" /></td>
+                                <td className=" col-sm-3"><input className="form-control" defaultValue="2.50" /></td>
                                 <td className="col-sm-1"><button className="btn btn-danger "><i className="fa fa-trash"></i></button></td>
                             </tr>
                             <tr scope="row">
@@ -255,9 +258,6 @@ export class ListaServicos extends Component {
                             <td>{Servico.qtdTempo}/{Servico.unidadeMedida}(s)</td>
                             <td>{Servico.valorServico}</td>
                             <td className="align-middle">
-                                <a className="btn btn-icon btn-dark" data-toggle="tooltip" title="" data-original-title="Enviar SMS" alt="Enviar SMS">
-                                    <i className="fa fa-comments"></i>
-                                </a>
                                 <a className="btn btn-icon btn-primary" onClick={(id) => this.handleEdit(Servico.uidServicoEstabelecimento)} title="Atualizar Servico" data-toggle="modal" data-target="#editarServico">
                                     <i className="fas fa-pen"></i>
                                 </a>
