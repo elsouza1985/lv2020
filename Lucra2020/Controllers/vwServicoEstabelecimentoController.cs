@@ -79,12 +79,9 @@ namespace Lucra2020.Controllers
         [HttpPost]
         public async Task<ActionResult<vwServicoEstabelecimento>> PostvwServicoEstabelecimento(vwServicoEstabelecimento vwServicoEstabelecimento)
         {
-
             vwServicoEstabelecimento.UidEstabelecimento = estab;
             _context.Servico.Add(vwServicoEstabelecimento);
             await _context.SaveChangesAsync();
-           
-
             return Ok();
         }
 
