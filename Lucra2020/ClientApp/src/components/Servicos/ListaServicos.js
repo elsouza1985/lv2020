@@ -1,5 +1,6 @@
 ﻿import React, { Component } from 'react';
-
+import Autosuggest from 'react-autosuggest';
+import $ from 'jquery';
 
 export class ListaServicos extends Component {
     static displayName = ListaServicos.name;
@@ -8,17 +9,40 @@ export class ListaServicos extends Component {
     constructor(props) {
 
         super(props);
-        this.state = { listaServicos: [], loading: true, loadingServico: false, ServicoData: new this.ServicoData(), produtoList: [], selectedProdutoList: [] };
+        this.state = {
+            listaServicos: [],
+            loading: true,
+            loadingServico: false,
+            ServicoData: new this.ServicoData(),
+            produtoList: [],
+            selectedProdutoList: [],
+            value: '',
+            suggestions: [] };
 
-
+         
         this.loadServicoList = this.loadServicoList.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.renderlistaServicosTable = this.renderlistaServicosTable.bind(this);
         this.renderServicoData = this.renderServicoData.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.onChange = this.onChange.bind(this);
+        this.getSuggestionValue = this.getSuggestionValue.bind(this);
+        this.addtableProduct = this.addtableProduct.bind(this);
+        this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this);
+        this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this);
+        this.renderSuggestion = this.renderSuggestion.bind(this);
         this.loadServicoList();
+       
+        //this.setState({ produtoList: produtos });
     }
+    
+    getSuggestionValue(suggestion) {
+        this.addtableProduct(suggestion.value);
+        return "";
+        
+    }
+   
     loadServicoList() {
         fetch('api/vwServicoEstabelecimento/', {
             method: 'GET',
@@ -43,19 +67,20 @@ export class ListaServicos extends Component {
         }
         return ServicoData;
     }
-    addtableProduct() {
-        let selectVal = document.getElementById('ddrProduto');
-        let idproduto = selectVal.options[selectVal.selectedIndex].value
-        fetch('api/vwProdutos/GetvwProdutoEstab/' + idproduto, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                this.setState({ produtoList: data });
-            });
+    addtableProduct(produto) {
+      
+        let table = $('#tblProdutos');
+       
+            let linha = '<tr scope="row">' +
+            '<td class=" col-sm-6"><input type="hidden" name="uidProdutoEstabelecimento" value='+produto.uidProdutoEstabelecimento+' />'+
+            '<input name="nomeProduto" class="form-control" disabled value = '+produto.nomeProduto+' /></td > ' +
+                '<td class="col-sm-2"><input name="qtdProdutoServico" class="form-control" value="1" /></td>' +
+                '<td class=" col-sm-3"><input name="ValorProdutoServico" class="form-control" value=' +produto.precoProdutoCompra +' /></td>' +
+                '<td class="col-sm-1"><button class="btn btn-danger "><i class="fa fa-trash"></i></button></td>' +
+                '</tr>';
+            table.append(linha);
+  
+        
     }
     handleSave(e) {
         e.preventDefault();
@@ -69,18 +94,26 @@ export class ListaServicos extends Component {
         }
         const produtoList = new Array();
 
-        produtoList.push({
-            UidProdutoEstabelecimento: 'F779ABBA-4616-48B5-8FE5-30084798ACEE'
-            , UnidadeMedida: "mL"
-            , QtdProdutoServico: "100"
-            , ValorProdutoServico: "1.53"
-        },  {
-             UidProdutoEstabelecimento: 'A060D653-D8C8-4DFB-BD84-D02F8FDC1F67'
-            , UnidadeMedida: "mL"
-            , QtdProdutoServico: "150"
-            , ValorProdutoServico: "3.35"
-        },
-        )
+        $('#tblProdutos > tbody > tr').each(function () {
+            produtoList.push({
+                UidProdutoEstabelecimento: $(this).find('input[name="uidProdutoEstabelecimento"]').val()
+                , UnidadeMedida: 'mL'
+                , QtdProdutoServico: $(this).find('input[name="qtdProdutoServico"]').val()
+                , ValorProdutoServico: $(this).find('input[name="ValorProdutoServico"]').val()
+            });
+        })
+        //produtoList.push({
+        //    UidProdutoEstabelecimento: 'F779ABBA-4616-48B5-8FE5-30084798ACEE'
+        //    , UnidadeMedida: "mL"
+        //    , QtdProdutoServico: "100"
+        //    , ValorProdutoServico: "1.53"
+        //},  {
+        //     UidProdutoEstabelecimento: 'A060D653-D8C8-4DFB-BD84-D02F8FDC1F67'
+        //    , UnidadeMedida: "mL"
+        //    , QtdProdutoServico: "150"
+        //    , ValorProdutoServico: "3.35"
+        //},
+        //)
         
         
         const data = {
@@ -184,7 +217,67 @@ export class ListaServicos extends Component {
         }
 
     }
-    renderServicoData(ServicoData, produtoList) {
+  
+
+onChange(event, { newValue }){
+    this.setState({
+        value: newValue
+    });
+}
+
+// Autosuggest will call this function every time you need to update suggestions.
+// You already implemented this logic above, so just use it.
+    onSuggestionsFetchRequested(value) {
+        const inputValue = value.value.trim().toLowerCase();
+        const inputLength = inputValue.length;
+
+        if (inputLength >= 2) {
+            fetch('api/vwProdutos/produtoNome?produtoNome=' + inputValue, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    let sug = data.map(function (val, index) {
+                        return { key: index, value: val };
+                    })
+                    this.setState({
+                        suggestions: sug
+                    });
+                });
+        }
+}
+
+// Autosuggest will call this function every time you need to clear suggestions.
+onSuggestionsClearRequested() {
+    this.setState({
+        suggestions: []
+    });
+    }
+    renderSuggestion(suggestion) {
+        return (
+            <div>
+                {suggestion.value.nomeProduto}
+            </div>
+        )
+    }
+renderServicoData(ServicoData, produtoList) {
+    const { value, suggestions } = this.state;
+
+    // Autosuggest will pass through all these props to the input.
+    const inputProps = {
+        placeholder: 'Digite um produto',
+        value,
+        onChange: this.onChange,
+        class: "form-control",
+        name:'nomeProduto'
+    }
+    const theme = {
+        input: 'form-control'
+    }
+    ServicoData.produtos.map((val) => (this.addtableProduct(val)));
         return (
             <form id="modalServico" onSubmit={this.handleSave}  >
                 <input type="hidden" name="uidServico" value={ServicoData.uidServico} />
@@ -192,9 +285,10 @@ export class ListaServicos extends Component {
                     <div className="row">
                         <label>*Serviço:</label>
                     </div>
-                    <div className="row">
-                        <input type="text" className="form-control" name="nomeServico" value={ServicoData.nomeServico} onChange={e => this.changeValue('nomeServico', e.target.value)} required />
-                    </div>
+                 <div className="row">
+                      <input type="text" className="form-control" name="nomeServico" value={ServicoData.nomeServico} onChange={e => this.changeValue('nomeServico', e.target.value)} required />
+                 </div>
+                   
                 </div>
                 <div className="form-group">
                     <label>*Tempo Médio:</label>
@@ -216,16 +310,21 @@ export class ListaServicos extends Component {
                     </div>
                     <div className="row">
                         <div className="col-sm-11">
-                    <select id="ddrProdutos" className="form-control">
-                        <option value="0">Selecione...</option>
-                        {produtoList.map(produto =>
-                            <option value={produto.eanProduto}> {produto.nomeProduto} </option>
-                        )}
-
-                            </select>
+                     <div className="row">
+                        <Autosuggest
+                            suggestions={suggestions}
+                            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                            onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                            getSuggestionValue={this.getSuggestionValue}
+                            renderSuggestion={this.renderSuggestion}
+                            inputProps={inputProps}
+                            theme={theme}
+                          
+                        />
+                     </div>
                         </div>
                         <div className="col-sm-1 mr-3">
-                            <button className="btn btn-success"><i class="fas fa-plus-circle"></i></button>
+                            <button className="btn btn-success" ><i class="fas fa-plus-circle"></i></button>
                         </div>
                     </div>
                  <div className="space-1">
@@ -238,18 +337,8 @@ export class ListaServicos extends Component {
                                 <th>Remover</th>
                             </tr>
                         </thead>
-                        <tr scope="row">
-                                <td className=" col-sm-6"><label className="form-control">Navalha</label></td>
-                                <td className="col-sm-2"><input className="form-control" defaultValue="1" /></td>
-                                <td className=" col-sm-3"><input className="form-control" defaultValue="2.50" /></td>
-                                <td className="col-sm-1"><button className="btn btn-danger "><i className="fa fa-trash"></i></button></td>
-                            </tr>
-                            <tr scope="row">
-                                <td ><label className="form-control">Shampoo</label></td>
-                                <td className="col-sm-3"><input className="form-control" value="0.1" /></td>
-                                <td className=" col-sm-3"><input className="form-control" value="0.50" /></td>
-                                <td className="col-sm-1"><button className="btn btn-danger "><i className="fa fa-trash"></i></button></td>
-                            </tr>
+                            <tbody>
+                            </tbody>
                         </table>
                    </div>
                 </div>

@@ -40,7 +40,7 @@ namespace Lucra2020.Controllers
             }
             vwServicoEstabelecimento.Produtos = await _context
                 .ServicoProdutos
-                .Where(a => a.UidServicoEstabelecimento == vwServicoEstabelecimento.UidEstabelecimento).ToListAsync();
+                .Where(a => a.UidServicoEstabelecimento == vwServicoEstabelecimento.UidServicoEstabelecimento).ToListAsync();
             return vwServicoEstabelecimento;
         }
 
