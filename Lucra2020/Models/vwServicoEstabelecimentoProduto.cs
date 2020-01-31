@@ -10,8 +10,8 @@ namespace Lucra2020.Models
     {
         [Key]
         public Guid UidServicoEstabelecimentoProduto { get; set; }
+        [ForeignKey("UidServicoEstabelecimento")]
         public Guid UidServicoEstabelecimento { get; set; }
-       
         public Guid UidProdutoEstabelecimento { get; set; }
         public string UnidadeMedida { get; set; }
         public decimal QtdProdutoServico { get; set; }

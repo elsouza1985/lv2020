@@ -38,9 +38,9 @@ namespace Lucra2020.Controllers
             {
                 return NotFound();
             }
-            vwServicoEstabelecimento.Produtos = await _context
-                .ServicoProdutos
-                .Where(a => a.UidServicoEstabelecimento == vwServicoEstabelecimento.UidEstabelecimento).ToListAsync();
+            //vwServicoEstabelecimento.Produtos = await _context
+            //    .ServicoProdutos
+            //    .Where(a => a.UidServicoEstabelecimento == vwServicoEstabelecimento.UidEstabelecimento).ToListAsync();
             return vwServicoEstabelecimento;
         }
 
@@ -77,11 +77,26 @@ namespace Lucra2020.Controllers
 
         // POST: api/vwServicoEstabelecimento
         [HttpPost]
-        public async Task<ActionResult<vwServicoEstabelecimento>> PostvwServicoEstabelecimento(vwServicoEstabelecimento vwServicoEstabelecimento)
+        public async Task<ActionResult<vwServicoEstabelecimento>> PostvwServicoEstabelecimento(vwServicoEstabelecimento ServicoEstabelecimento)
         {
+            ServicoEstabelecimento.UidEstabelecimento = estab;
+            vwServicoEstabelecimento servico = new vwServicoEstabelecimento
+            {
+                NomeServico = ServicoEstabelecimento.NomeServico,
+                QtdTempo = ServicoEstabelecimento.QtdTempo,
+                TipoUnidadeMedida = ServicoEstabelecimento.TipoUnidadeMedida,
+                UidEstabelecimento = estab,
+                UnidadeMedida = ServicoEstabelecimento.UnidadeMedida,
+                ValorServico = ServicoEstabelecimento.ValorServico
+            };
 
-            vwServicoEstabelecimento.UidEstabelecimento = estab;
-            _context.Servico.Add(vwServicoEstabelecimento);
+            _context.Servico.Add(ServicoEstabelecimento);
+            //foreach (var item in ServicoEstabelecimento.Produtos)
+            //{
+            //    servico.Produtos.Add(item);
+            //}
+            
+            //_context.Servico.Add(ServicoEstabelecimento);
             await _context.SaveChangesAsync();
            
 

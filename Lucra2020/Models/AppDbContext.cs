@@ -22,7 +22,7 @@ namespace Lucra2020.Models
         public virtual DbSet<vwProdutoEstabelecimento> ProdutoEstabelecimento { get; set; }
         public virtual DbSet<vwProduto> Produto { get; set; }
         public virtual DbSet<vwServicoEstabelecimento> Servico { get; set; }
-        public virtual DbSet<vwServicoEstabelecimentoProduto> ServicoProdutos { get; set; }
+      //  public virtual DbSet<vwServicoEstabelecimentoProduto> ServicoProdutos { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 //            if (!optionsBuilder.IsConfigured)
@@ -35,9 +35,8 @@ namespace Lucra2020.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
-            modelBuilder.Entity<vwServicoEstabelecimento>()
-                    .HasMany(c => c.Produtos)
-                    .WithOne(e => e.Servico).IsRequired();
+        
+           
 
         }
     }
