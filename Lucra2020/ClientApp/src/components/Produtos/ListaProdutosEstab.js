@@ -1,5 +1,7 @@
 ﻿import React, { Component } from 'react';
-
+import Autosuggest from 'react-autosuggest';
+import $ from 'jquery';
+import R from 'ramda';
 
 export class ListaProdutosEstab extends Component {
    static displayName = ListaProdutosEstab.name;
@@ -8,7 +10,13 @@ export class ListaProdutosEstab extends Component {
     constructor(props) {
        
         super(props);
-        this.state = { ListaProdutos: [], loading: true, loadingcliente: false, produtoData:  [], ListaProdutoMatriz: [] };
+        this.state = {
+            ListaProdutos: [],
+            loading: true,
+            loadingcliente: false,
+            produtoData: {},
+            value: '',
+            suggestions: []  };
 
 
         this.loadProdutoList = this.loadProdutoList.bind(this);
@@ -17,14 +25,74 @@ export class ListaProdutosEstab extends Component {
         this.renderprodutoData = this.renderprodutoData.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
-        this.ProdutoData = this.ProdutoData.bind(this);
+        this.resetProdutoData = this.resetProdutoData.bind(this);
         this.formatMoeda = this.formatMoeda.bind(this);
-        this.loadProdutoList(1);
+        this.onChange = this.onChange.bind(this);
+        this.getSuggestionValue = this.getSuggestionValue.bind(this);
+        this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this);
+        this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this);
+        this.renderSuggestion = this.renderSuggestion.bind(this);
+        this.loadProdutoList();
         
     }
+    getSuggestionValue(suggestion) {
+        this.changeValue('UidProduto', suggestion.value.uidProduto);
+        return suggestion.value.nomeProduto + " " + suggestion.value.quantidadeProdutoEmbalagem + "-" + suggestion.value.unidadeMedida;
 
-    loadProdutoList(tipo) {
-        if (tipo == 1) {
+    }
+    onSuggestionsFetchRequested(value) {
+        const inputValue = value.value.trim().toLowerCase();
+        const inputLength = inputValue.length;
+
+        if (inputLength >= 2) {
+            fetch('api/vwProdutos/listarProd?produtoNome=' + inputValue, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    let sug = data.map(function (val, index) {
+                        return { key: index, value: val };
+                    })
+                    this.setState({
+                        suggestions: sug
+                    });
+                });
+        }
+    }
+
+    // Autosuggest will call this function every time you need to clear suggestions.
+    onSuggestionsClearRequested() {
+        this.setState({
+            suggestions: []
+        });
+    }
+    renderSuggestion(suggestion) {
+        return (
+            <div>
+                {suggestion.value.nomeProduto}
+            </div>
+        )
+    }
+    changeValue(prop, value) {
+        const { produtoData } = { ...this.state };
+        const currentState = produtoData;
+        
+        currentState[prop] = value;
+
+        this.setState({ produtoData: currentState });
+       
+        //this.loadProdutoList(1);
+    }
+    onChange(event, { newValue }) {
+        this.setState({
+            value: newValue
+        });
+    }
+    loadProdutoList() {
+
             fetch('api/vwProdutos/LoadProdList', {
                 method: 'GET',
                 headers: {
@@ -35,44 +103,30 @@ export class ListaProdutosEstab extends Component {
                 .then(data => {
                     this.setState({ ListaProdutos: data, loading: false });
                 });
-        } else {
-            fetch('api/vwProdutos', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    this.setState({ ListaProdutoMatriz: data, loading: false });
-                });
-        }
+       
     }
-    ProdutoData() {
-        const produtoData = {
-            uidProdutoEstabelecimento: undefined ,
-            NomeProduto: "",
-            EANProduto: "",
-            precoProdutoCompra: "R$0,00",
-            precoProdutoVenda: "R$0,00",
-            qtdEstoque:""
-         }
-        return produtoData;
+    resetProdutoData() {
+        this.setState({
+            produtoData: {
+                uidProdutoEstabelecimento: undefined,
+                uidProduto: undefined,
+                uidEstabelecimento: undefined,
+                EANProduto: 0,
+                precoProdutoCompra: 0,
+                precoProdutoVenda: 0,
+                qtdEstoque:0
+            }
+            
+        });
+        $('.editinput').attr('disabled', false);
     }
     handleSave(e) {
         e.preventDefault();
         let uidProdutoEstabelecimento = this.state.produtoData.uidProdutoEstabelecimento;
-        let produtoselecionado = document.getElementsByName('nomeProduto')[0];
-        const data = {
-            uidProdutoEstabelecimento: this.state.produtoData.uidProdutoEstabelecimento,
-            EANProduto: produtoselecionado.options[produtoselecionado.selectedIndex].value,
-            precoProdutoCompra: document.getElementsByName('precoProdutoCompra')[0].value,
-            precoProdutoVenda: document.getElementsByName('precoProdutoVenda')[0].value,
-            qtdEstoque: document.getElementsByName('qtdEstoque')[0].value
-        }
+        const data = this.state.produtoData;//{
         // PUT solicitação para editar 
         if (uidProdutoEstabelecimento) {
-            fetch('api/vwProdutos/' + uidProdutoEstabelecimento, {
+            fetch('api/vwProdutos/Prodestab/' + uidProdutoEstabelecimento, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -80,8 +134,8 @@ export class ListaProdutosEstab extends Component {
                 body: JSON.stringify(data),
             }).then((response) => {
                 console.log(response)
-                if (response.status == 200) {
-                    this.loadProdutoList(2);
+                if (response.status === 200 || response.status === 201) {
+                    this.loadProdutoList();
                     document.getElementsByClassName('close')[0].click();
                    // this.setState({ produtoData: undefined });
                 } else {
@@ -99,9 +153,9 @@ export class ListaProdutosEstab extends Component {
                 body: JSON.stringify(data),
                 }).then((response) => {
                     console.log(response)
-                    if (response.status == 200) {
-                        this.loadProdutoList(1);
-                        this.setState({ produtoData: [] })
+                    if (response.status == 200 || response.status == 201) {
+                        this.loadProdutoList();
+                        this.resetProdutoData();
                         document.getElementsByClassName('close')[0].click();
                     }
             })
@@ -120,18 +174,12 @@ export class ListaProdutosEstab extends Component {
             .then(response => response.json())
             .then(data => {
                 this.setState({ titulo: "Editar", carregando: false, produtoData: data });
-                this.loadProdutoList(2);
+                this.setState({ value: this.state.produtoData.nomeProduto });
+                $('.editinput').attr('disabled', true);
+                this.loadProdutoList();
             }).catch(error => { console.log(error) });
     }
-    changeValue(prop, value) {
-        this.setState(prevState => ({
-            produtoData: {
-                ...prevState.produtoData,
-                ...prevState.produtoData[prop] = value
-            }
-        }))
-        this.loadProdutoList();
-    }
+
     handleDelete(id) {
 
         if (window.confirm('Esta ação irá apagar o registro, confirma?')) {
@@ -142,7 +190,7 @@ export class ListaProdutosEstab extends Component {
                 }
             })
                 .then((response) => {
-                    if (response.status == 200) {
+                    if (response.status === 200 || response.status === 201) {
                         this.loadClientList();
                     }
                 })
@@ -150,30 +198,50 @@ export class ListaProdutosEstab extends Component {
         }
       
     }
-    renderprodutoData(produtoData, produtoList) {
+    //setObjectByPath(fieldPath, value) {
+    //    this.setState({
+    //        todoList: R.set(R.lensPath(fieldPath), value, this.state.todoList)
+    //    })
+    //}
+    renderprodutoData(produtoData) {
+        const inputProps = {
+            placeholder: 'Digite o nome do produto...',
+            value:this.state.value,
+            onChange: this.onChange,
+            class: "form-control editinput",
+            name: 'nomeProduto'
+            
+        }
+        const theme = {
+            input: 'form-control'
+        }
         return (
             <form  onSubmit={this.handleSave}  >
-                <input type="hidden" name="uidProdutoEstabelecimento" value={produtoData.uidProdutoEstabelecimento} />
+                <input type="hidden" id="UidProdutoEstabelecimento" value={ produtoData.uidProdutoEstabelecimento} />
+                <input type="hidden" id="UidProduto" value={produtoData.uidProduto} />
                 <div className="form-group">
                     <label>*Nome:</label>
-                    <select className="form-control" name="nomeProduto" value={produtoData.eanProduto} required >
-                        <option value="0"> Selecione... </option>
-                        {produtoList.map(produto =>
-                            <option  value={produto.eanProduto}> {produto.nomeProduto} </option>
-                            )}
-                    </select>
+                    <Autosuggest
+                        suggestions={this.state.suggestions}
+                        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                        onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                        getSuggestionValue={this.getSuggestionValue}
+                        renderSuggestion={this.renderSuggestion}
+                        inputProps={inputProps}
+                        theme={theme}
+                    />
                 </div>
                 <div className="form-group">
                     <label>Valor de compra</label>
-                    <input type="number" className="form-control" name="precoProdutoCompra" onChange={e => this.changeValue('precoProdutoCompra', e.target.value)} value={produtoData.precoProdutoCompra} />
+                    <input type="number" step="any" className="form-control" id="precoProdutoCompra" onChange={e => this.changeValue('precoProdutoCompra', e.target.value)} value={produtoData.precoProdutoCompra} />
                 </div>
                 <div className="form-group">
                     <label>Valor de venda</label>
-                    <input type="money" className="form-control" name="precoProdutoVenda" onChange={e => this.changeValue('precoProdutoVenda', e.target.value)} value={produtoData.precoProdutoVenda} />
+                    <input type="number" step="any" className="form-control" id="precoProdutoVenda" onChange={e => this.changeValue('precoProdutoVenda', e.target.value)} value={produtoData.precoProdutoVenda} />
                 </div>
                 <div className="form-group">
                     <label>Estoque</label>
-                    <input type="number" className="form-control" name="qtdEstoque" onChange={e => this.changeValue('qtdEstoque', e.target.value)} value={produtoData.qtdEstoque} />
+                    <input type="number" step="any" className="form-control" id="qtdEstoque" onChange={e => this.changeValue('qtdEstoque', e.target.value)} value={produtoData.qtdEstoque} />
                 </div>
                
                 <div className="modal-footer bg-whitesmoke br">
@@ -239,7 +307,7 @@ export class ListaProdutosEstab extends Component {
             ? <p><em>Loading...</em></p>
             : this.renderListaProdutosEstabTable(this.state.ListaProdutos);
         let clienteRender = this.state.loadingcliente ? <p><em>Carregando...</em></p>
-            : this.renderprodutoData(this.state.produtoData, this.state.ListaProdutoMatriz);
+            : this.renderprodutoData(this.state.produtoData);
         return (
             <div >
                 <section className="section">
@@ -252,10 +320,8 @@ export class ListaProdutosEstab extends Component {
                     </div>
                     <p>
                         <button data-toggle="modal" data-target="#editarCliente" onClick={() => {
-                            this.loadProdutoList(2);
-                            this.setState({
-                                produtoData: this.ProdutoData()
-                            })
+                            this.loadProdutoList();
+                            this.resetProdutoData();
                             }} >+Produto</button>
                     </p>
                     <div className="section-body">

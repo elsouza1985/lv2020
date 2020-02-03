@@ -92,7 +92,7 @@ export class ListaServicos extends Component {
             , QtdProdutoServico: ""
             , ValorProdutoServico: ""
         }
-        const produtoList = new Array();
+        const produtoList = [];
 
         $('#tblProdutos > tbody > tr').each(function () {
             produtoList.push({
@@ -102,18 +102,6 @@ export class ListaServicos extends Component {
                 , ValorProdutoServico: $(this).find('input[name="ValorProdutoServico"]').val()
             });
         })
-        //produtoList.push({
-        //    UidProdutoEstabelecimento: 'F779ABBA-4616-48B5-8FE5-30084798ACEE'
-        //    , UnidadeMedida: "mL"
-        //    , QtdProdutoServico: "100"
-        //    , ValorProdutoServico: "1.53"
-        //},  {
-        //     UidProdutoEstabelecimento: 'A060D653-D8C8-4DFB-BD84-D02F8FDC1F67'
-        //    , UnidadeMedida: "mL"
-        //    , QtdProdutoServico: "150"
-        //    , ValorProdutoServico: "3.35"
-        //},
-        //)
         
         
         const data = {
@@ -135,7 +123,7 @@ export class ListaServicos extends Component {
                 body: JSON.stringify(data),
             }).then((response) => {
                 console.log(response)
-                if (response.status == 200|| response.status == 201) {
+                if (response.status === 200|| response.status === 201) {
                     this.loadServicoList();
                     document.getElementsByClassName('close')[0].click();
                     // this.setState({ ServicoData: undefined });
@@ -268,7 +256,7 @@ renderServicoData(ServicoData, produtoList) {
 
     // Autosuggest will pass through all these props to the input.
     const inputProps = {
-        placeholder: 'Digite um produto',
+        placeholder: 'Digite o nome do produto...',
         value,
         onChange: this.onChange,
         class: "form-control",
