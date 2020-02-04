@@ -18,7 +18,7 @@ namespace Lucra2020.Models
         public byte DDD { get; set; } 
         public long Telefone { get; set; }
         public string Email { get; set; }
-        public DateTime DataDeNascimento { get; set; }
+        public DateTime DataNascimento { get; set; }
 
     }
 }
