@@ -12,6 +12,8 @@ namespace Lucra2020.Models
         [Key]
         public Guid UidProduto { get; set; }
         public string NomeProduto { get; set; }
+        public string UnidadeMedida { get; set; }
+        public decimal QuantidadeProdutoEmbalagem { get; set; }
         public long EANProduto { get; set; }
     }
 }

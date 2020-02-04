@@ -57,6 +57,19 @@ namespace Lucra2020.Controllers
         {
             return await _context.Produto.ToListAsync();
         }
+        // GET: api/vwProdutos
+        [HttpGet("listarProd")]
+        public async Task<ActionResult<IEnumerable<vwProduto>>> GetProduto(string produtoNome)
+        {
+            return await _context.Produto.Where(a => a.NomeProduto.Contains(produtoNome)).ToListAsync();
+        }
+        [HttpGet("produtoNome")]
+        public async Task<ActionResult<IEnumerable<vwProdutoEstabelecimento>>> GetProdutoNome(string produtoNome)
+        {
+            return await _context.ProdutoEstabelecimento
+                                .Where(a=> a.NomeProduto.Contains(produtoNome)&& a.UidEstabelecimento == estab)
+                                .ToListAsync();
+        }
 
         // GET: api/vwProdutos/5
         [HttpGet("{id}")]
@@ -101,6 +114,35 @@ namespace Lucra2020.Controllers
 
             return Ok();
         }
+        // PUT: api/vwProdutos/5
+        [HttpPut("Prodestab/{id}")]
+        public async Task<IActionResult> Prodestab(Guid id, vwProdutoEstabelecimento Produto)
+        {
+            if (id != Produto.uidProdutoEstabelecimento)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(Produto).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!vwProdutoEstabExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Ok();
+        }
 
         // POST: api/vwProdutos
         [HttpPost]
@@ -125,23 +167,37 @@ namespace Lucra2020.Controllers
 
         // DELETE: api/vwProdutos/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<vwProduto>> DeletevwProduto(int id)
+        public async Task<ActionResult<vwProduto>> DeletevwProduto(Guid id)
         {
-            var vwProduto = await _context.Produto.FindAsync(id);
-            if (vwProduto == null)
+            var Produto = await _context.Produto.FindAsync(id);
+            if (Produto == null)
             {
-                return NotFound();
+                var ProdutoEstab = await _context.ProdutoEstabelecimento.FindAsync(id);
+                if (ProdutoEstab != null)
+                {
+                    _context.ProdutoEstabelecimento.Remove(ProdutoEstab);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
 
-            _context.Produto.Remove(vwProduto);
+            _context.Produto.Remove(Produto);
             await _context.SaveChangesAsync();
 
-            return vwProduto;
+            return Ok();
         }
 
         private bool vwProdutoExists(Guid id)
         {
             return _context.Produto.Any(e => e.UidProduto == id);
+        }
+        private bool vwProdutoEstabExists(Guid id)
+        {
+            return _context.ProdutoEstabelecimento.Any(e => e.uidProdutoEstabelecimento == id);
         }
     }
 }

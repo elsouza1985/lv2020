@@ -1,5 +1,5 @@
 ﻿import React, { Component, useState } from 'react';
-
+import $ from 'jquery';
 
 export class ListaProdutos extends Component {
     static displayName = ListaProdutos.name;
@@ -17,7 +17,7 @@ export class ListaProdutos extends Component {
         this.renderprodutoData = this.renderprodutoData.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
-        this.ProdutoData = this.ProdutoData.bind(this);
+        this.resetProdutoData = this.resetProdutoData.bind(this);
         this.formatMoeda = this.formatMoeda.bind(this);
         this.loadProdutoList();
 
@@ -34,13 +34,8 @@ export class ListaProdutos extends Component {
                 this.setState({ ListaProdutos: data, loading: false });
             });
     }
-    ProdutoData() {
-        const produtoData = {
-            uidProduto: undefined,
-            NomeProduto: "",
-            EANProduto: "",
-        }
-        return produtoData;
+    resetProdutoData() {
+        this.setState({ ProdutoData: [] });
     }
     handleSave(e) {
         e.preventDefault();
@@ -48,7 +43,9 @@ export class ListaProdutos extends Component {
         const data = {
             uidProduto: this.state.produtoData.uidProduto,
             NomeProduto: document.getElementsByName('nomeProduto')[0].value,
-            EANProduto: document.getElementsByName('eanProduto')[0].value
+            EANProduto: document.getElementsByName('eanProduto')[0].value,
+            quantidadeProdutoEmbalagem: document.getElementsByName('quantidadeProdutoEmbalagem')[0].value,
+            unidadeMedida: $('#unidadeMedida').val()
         }
         // PUT solicitação para editar contato
         if (uidProduto) {
@@ -61,7 +58,7 @@ export class ListaProdutos extends Component {
             }).then((response) => {
                 console.log(response)
                 if (response.status == 200) {
-                    this.loadProdutoList();
+                    this.resetProdutoData();
                     document.getElementsByClassName('close')[0].click();
                     // this.setState({ produtoData: undefined });
                 } else {
@@ -80,7 +77,7 @@ export class ListaProdutos extends Component {
             }).then((response) => {
                 if (response.status == 200 || response.status == 201) {
                     this.loadProdutoList();
-                    this.setState({ produtoData: this.produtoData() })
+                    this.resetProdutoData();
                     document.getElementsByClassName('close')[0].click();
                 }
             })
@@ -140,6 +137,23 @@ export class ListaProdutos extends Component {
                 <div className="form-group">
                     <label>*Nome:</label>
                     <input type="text" className="form-control" name="nomeProduto" value={produtoData.nomeProduto} onChange={e => this.changeValue('nomeProduto', e.target.value)} required />
+                </div>
+                <div className="row">
+                <div className="col-md-8">
+                    <label>Quantidade:</label>
+                    <input type="text" className="form-control" name="quantidadeProdutoEmbalagem" value={produtoData.quantidadeProdutoEmbalagem} onChange={e => this.changeValue('quantidadeProdutoEmbalagem', e.target.value)} required />
+                </div>
+                <div className="col-md-4">
+                    <label>Unidade Medida:</label>
+                        <select id="unidadeMedida" className="form-control" value={produtoData.unidadeMedida} onChange={e => this.changeValue('unidadeMedida', $("#unidadeMedida option:selected").val())}>
+                            <option value="">Selecione...</option>
+                            <option value="Un">Unidade</option>
+                        <option value="Kg" >Kilo</option>
+                        <option value="g">Grama</option>
+                        <option value="L">Litro</option>
+                        <option value="mL">Mililitro</option>
+                    </select>
+                    </div>
                 </div>
                 <div className="form-group">
                     <label>Codigo do Produto</label>
@@ -251,7 +265,7 @@ export class ListaProdutos extends Component {
                         </div>
                     </div>
                     <p>
-                        <button data-toggle="modal" data-target="#editarCliente" onClick={() => { this.setState({ produtoData: this.ProdutoData() }) }} >+Produto</button>
+                        <button data-toggle="modal" data-target="#editarCliente" onClick={() => { this.resetProdutoData() }} >+Produto</button>
                     </p>
                     <div className="section-body">
                         {contents}
