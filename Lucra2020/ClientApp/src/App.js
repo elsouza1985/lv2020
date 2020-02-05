@@ -7,6 +7,7 @@ import { ExibeCliente } from './components/Clientes/ExibirCliente';
 import { ListaProdutos } from './components/Produtos/ListaProdutos';
 import { ListaProdutosEstab } from './components/Produtos/ListaProdutosEstab';
 import { ListaServicos } from './components/Servicos/ListaServicos';
+import { Tela } from './components/Vendas/Tela';
 
 
 export default class App extends Component {
@@ -21,6 +22,7 @@ export default class App extends Component {
             <Route path="/produtos" component={ListaProdutos} />
             <Route path="/produtosestab" component={ListaProdutosEstab} />
             <Route path="/servicos" component={ListaServicos} />
+            <Route path="/vendas" component={Tela} />
       
       </Layout>
     );

@@ -149,9 +149,6 @@ export class NavMenu extends Component {
                                     <NavLink tag={Link} className="nav-link" to="/produtosestab"><i className="fa fa-clipboard-list"></i> <span>Produtos Estab</span></NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink tag={Link} className="nav-link" to="/servicos"><i className="fa fa-hand-scissors"></i> <span>Serviços</span></NavLink>
-                                </NavItem>
-                                <NavItem>
                                     <NavLink tag={Link} className="nav-link" to="/vendas"><i className="fa fa-shopping-cart"></i> <span>Vendas</span></NavLink>
                                 </NavItem>
                             </ul>
