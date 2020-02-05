@@ -11,7 +11,6 @@ function Cupom() {
                 </div>
                 <div className="card-body p-0">
                     <div className="tickets-list">
-                        //<!--VALOR TOTAL -->
                     <span className="ticket-item">
                             <div className="ticket-title">
                                 <h4>Nome do Cliente</h4>
