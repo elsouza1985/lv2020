@@ -1,12 +1,10 @@
 ﻿import React, { Component } from 'react';
 import Autosuggest from 'react-autosuggest';
 import $ from 'jquery';
-import './style.css';
+import Welcome from '../Vendas/Venda';
 
 export class ListaServicos extends Component {
     static displayName = ListaServicos.name;
-
-
     constructor(props) {
 
         super(props);
@@ -14,13 +12,14 @@ export class ListaServicos extends Component {
             listaServicos: [],
             loading: true,
             loadingServico: false,
-            ServicoData: new this.ServicoData(),
+            ServicoData: this.resetServicoData(),
             produtoList: [],
             selectedProdutoList: [],
             value: '',
-            suggestions: [] };
+            suggestions: []
+        };
 
-         
+
         this.loadServicoList = this.loadServicoList.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.renderlistaServicosTable = this.renderlistaServicosTable.bind(this);
@@ -34,16 +33,16 @@ export class ListaServicos extends Component {
         this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this);
         this.renderSuggestion = this.renderSuggestion.bind(this);
         this.loadServicoList();
-       
+
         //this.setState({ produtoList: produtos });
     }
-    
+
     getSuggestionValue(suggestion) {
-        this.addtableProduct(suggestion.value);
+        this.addtableProduct(suggestion.value, "new");
         return "";
-        
+
     }
-   
+
     loadServicoList() {
         fetch('api/vwServicoEstabelecimento/', {
             method: 'GET',
@@ -56,32 +55,45 @@ export class ListaServicos extends Component {
                 this.setState({ listaServicos: data, loading: false });
             });
     }
-    ServicoData() {
+    changeev(e) {
+        alert(e.target.value);
+    }
+    resetServicoData() {
         const ServicoData = {
             uidServicoEstabelecimento: undefined,
             nomeServico: "",
             qtdTempo: "",
             unidadeMedida: "",
             produtos: [],
-            valorServico:""
+            valorServico: ""
 
         }
         return ServicoData;
     }
-    addtableProduct(produto) {
-      
+    addtableProduct(produto, type) {
+
         let table = $('#tblProdutos');
-       
+        if (type == "new") {
             let linha = '<tr scope="row">' +
-            '<td class=" col-sm-6"><input type="hidden" name="uidProdutoEstabelecimento" value='+produto.uidProdutoEstabelecimento+' />'+
-            '<input name="nomeProduto" class="form-control" disabled value = '+produto.nomeProduto+' /></td > ' +
-                '<td class="col-sm-2"><input name="qtdProdutoServico" class="form-control" value="1" /></td>' +
-                '<td class=" col-sm-3"><input name="ValorProdutoServico" class="form-control" value=' +produto.precoProdutoCompra +' /></td>' +
+                '<td class=" col-sm-6"><input type="hidden" name="uidProdutoEstabelecimento" value=' + produto.uidProdutoEstabelecimento + ' />' +
+                '<input name="nomeProduto" class="form-control" disabled value = ' + produto.nomeProduto + ' /></td > ' +
+                '<td class="col-sm-2"><input name="qtdProdutoServico" class="form-control" value="1" onchange="this.changeev(e);" /></td>' +
+                '<td class=" col-sm-3"><input name="ValorProdutoServico" class="form-control" value=' + produto.precoProdutoCompra + ' /></td>' +
                 '<td class="col-sm-1"><button class="btn btn-danger "><i class="fa fa-trash"></i></button></td>' +
                 '</tr>';
             table.append(linha);
-  
-        
+        } else {
+            let linha = '<tr scope="row">' +
+                '<td class=" col-sm-6"><input type="hidden" name="uidProdutoEstabelecimento" value=' + produto.uidProdutoEstabelecimento + ' />' +
+                '<input name="nomeProduto" class="form-control" disabled value = ' + produto.nomeProduto + ' /></td > ' +
+                '<td class="col-sm-2"><input name="qtdProdutoServico" class="form-control" value=' + produto.qtdProdutoServico + ' /></td>' +
+                '<td class=" col-sm-3"><input name="ValorProdutoServico" class="form-control" value=' + produto.valorProdutoServico + ' /></td>' +
+                '<td class="col-sm-1"><button class="btn btn-danger "><i class="fa fa-trash"></i></button></td>' +
+                '</tr>';
+            table.append(linha);
+        }
+
+
     }
     handleSave(e) {
         e.preventDefault();
@@ -103,8 +115,8 @@ export class ListaServicos extends Component {
                 , ValorProdutoServico: $(this).find('input[name="ValorProdutoServico"]').val()
             });
         })
-        
-        
+
+
         const data = {
             UidServicoEstabelecimento: this.state.ServicoData.uidServicoEstabelecimento,
             NomeServico: document.getElementsByName('nomeServico')[0].value,
@@ -124,7 +136,7 @@ export class ListaServicos extends Component {
                 body: JSON.stringify(data),
             }).then((response) => {
                 console.log(response)
-                if (response.status === 200|| response.status === 201) {
+                if (response.status === 200 || response.status === 201) {
                     this.loadServicoList();
                     document.getElementsByClassName('close')[0].click();
                     // this.setState({ ServicoData: undefined });
@@ -148,7 +160,7 @@ export class ListaServicos extends Component {
                     document.getElementsByClassName('close')[0].click();
                     // this.setState({ ServicoData: undefined });
                 } else {
-                    window.alert('Ocorreu um erro ao criar o cadastro\nErro:'+response.statusText);
+                    window.alert('Ocorreu um erro ao criar o cadastro\nErro:' + response.statusText);
                 }
             });
         }
@@ -168,16 +180,7 @@ export class ListaServicos extends Component {
                 this.setState({ titulo: "Editar", carregando: false, ServicoData: data });
                 console.log(data);
             }).catch(error => { console.log(error) });
-        fetch('api/vwProdutos/LoadProdList', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                this.setState({ produtoList: data });
-            });
+
     }
     changeValue(prop, value) {
         this.setState(prevState => ({
@@ -206,16 +209,16 @@ export class ListaServicos extends Component {
         }
 
     }
-  
 
-onChange(event, { newValue }){
-    this.setState({
-        value: newValue
-    });
-}
 
-// Autosuggest will call this function every time you need to update suggestions.
-// You already implemented this logic above, so just use it.
+    onChange(event, { newValue }) {
+        this.setState({
+            value: newValue
+        });
+    }
+
+    // Autosuggest will call this function every time you need to update suggestions.
+    // You already implemented this logic above, so just use it.
     onSuggestionsFetchRequested(value) {
         const inputValue = value.value.trim().toLowerCase();
         const inputLength = inputValue.length;
@@ -237,13 +240,13 @@ onChange(event, { newValue }){
                     });
                 });
         }
-}
+    }
 
-// Autosuggest will call this function every time you need to clear suggestions.
-onSuggestionsClearRequested() {
-    this.setState({
-        suggestions: []
-    });
+    // Autosuggest will call this function every time you need to clear suggestions.
+    onSuggestionsClearRequested() {
+        this.setState({
+            suggestions: []
+        });
     }
     renderSuggestion(suggestion) {
         return (
@@ -252,21 +255,24 @@ onSuggestionsClearRequested() {
             </span>
         )
     }
-renderServicoData(ServicoData, produtoList) {
-    const { value, suggestions } = this.state;
+    renderServicoData(ServicoData, produtoList) {
+        const { value, suggestions } = this.state;
 
-    // Autosuggest will pass through all these props to the input.
-    const inputProps = {
-        placeholder: 'Digite o nome do produto...',
-        value,
-        onChange: this.onChange,
-        class: "form-control",
-        name:'nomeProduto'
-    }
-    const theme = {
-        input: 'form-control'
-    }
-    ServicoData.produtos.map((val) => (this.addtableProduct(val)));
+        // Autosuggest will pass through all these props to the input.
+        const inputProps = {
+            placeholder: 'Digite o nome do produto...',
+            value,
+            onChange: this.onChange,
+            class: "form-control",
+            name: 'nomeProduto'
+        }
+        const theme = {
+            input: 'form-control'
+        }
+        for (var i = 0; i < ServicoData.produtos.length; i++) {
+            this.addtableProduct(ServicoData.produtos[i]);
+        }
+
         return (
             <form id="modalServico" onSubmit={this.handleSave}  >
                 <input type="hidden" name="uidServico" value={ServicoData.uidServico} />
@@ -274,10 +280,10 @@ renderServicoData(ServicoData, produtoList) {
                     <div className="row">
                         <label>*Serviço:</label>
                     </div>
-                 <div className="row">
-                      <input type="text" className="form-control" name="nomeServico" value={ServicoData.nomeServico} onChange={e => this.changeValue('nomeServico', e.target.value)} required />
-                 </div>
-                   
+                    <div className="row">
+                        <input type="text" className="form-control" name="nomeServico" value={ServicoData.nomeServico} onChange={e => this.changeValue('nomeServico', e.target.value)} required />
+                    </div>
+
                 </div>
                 <div className="form-group">
                     <label>*Tempo Médio:</label>
@@ -299,37 +305,37 @@ renderServicoData(ServicoData, produtoList) {
                     </div>
                     <div className="row">
                         <div className="col-sm-11">
-                     <div className="row">
-                        <Autosuggest
-                            suggestions={suggestions}
-                            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-                            onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-                            getSuggestionValue={this.getSuggestionValue}
-                            renderSuggestion={this.renderSuggestion}
-                            inputProps={inputProps}
-                            theme={theme}
-                          
-                        />
-                     </div>
+                            <div className="row">
+                                <Autosuggest
+                                    suggestions={suggestions}
+                                    onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                                    onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                                    getSuggestionValue={this.getSuggestionValue}
+                                    renderSuggestion={this.renderSuggestion}
+                                    inputProps={inputProps}
+                                    theme={theme}
+
+                                />
+                            </div>
                         </div>
                         <div className="col-sm-1 mr-3">
                             <button className="btn btn-success" ><i class="fas fa-plus-circle"></i></button>
                         </div>
                     </div>
-                 <div className="space-1">
+                    <div className="space-1">
                         <table id="tblProdutos" className="table table-striped">
-                        <thead className="thead-light">
-                            <tr>
-                                <th>Produto</th>
-                                <th>Qtd</th>
-                                <th>Custo(R$)</th>
-                                <th>Remover</th>
-                            </tr>
-                        </thead>
+                            <thead className="thead-light">
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Qtd</th>
+                                    <th>Custo(R$)</th>
+                                    <th>Remover</th>
+                                </tr>
+                            </thead>
                             <tbody>
                             </tbody>
                         </table>
-                   </div>
+                    </div>
                 </div>
                 <div className="form-group">
                     <label>Valor:</label>
@@ -383,6 +389,7 @@ renderServicoData(ServicoData, produtoList) {
             : this.renderServicoData(this.state.ServicoData, this.state.produtoList);
         return (
             <div >
+                <Welcome name="pessoal" val1={this.state.listaServicos.length} val2="5"/>
                 <section className="section">
                     <div className="section-header">
                         <h1><i className="fa fa-user-friends"></i> Servicos</h1>
@@ -392,7 +399,7 @@ renderServicoData(ServicoData, produtoList) {
                         </div>
                     </div>
                     <p>
-                        <a to="#" data-toggle="modal" data-target="#editarServico" onClick={() => { this.setState({ ServicoData: this.ServicoData() }) }} >Adicionar Servico</a>
+                        <a to="#" data-toggle="modal" data-target="#editarServico" onClick={() => {this.resetServicoData()  }} >Adicionar Servico</a>
                     </p>
                     <div className="section-body">
                         {contents}

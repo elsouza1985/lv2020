@@ -13,7 +13,7 @@ export class ExibeCliente extends React.Component {
         let contid = this.props.match.params["contid"];
         // define o state para a edição de um contato
         if (contid > 0) {
-            fetch('http://localhost:49929/api/vwClientes/ff0de7f4-9ad0-49cd-805f-d8a223e68c78' )
+            fetch('api/vwClientes/ff0de7f4-9ad0-49cd-805f-d8a223e68c78' )
                 .then(response => response.json())
                 .then(data => {
                     this.setState({ titulo: "Editar", carregando: false, contData: data });
