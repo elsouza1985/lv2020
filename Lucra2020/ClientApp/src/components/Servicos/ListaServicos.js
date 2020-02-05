@@ -1,6 +1,7 @@
 ﻿import React, { Component } from 'react';
 import Autosuggest from 'react-autosuggest';
 import $ from 'jquery';
+import './style.css';
 
 export class ListaServicos extends Component {
     static displayName = ListaServicos.name;
@@ -246,9 +247,9 @@ onSuggestionsClearRequested() {
     }
     renderSuggestion(suggestion) {
         return (
-            <div>
+            <span>
                 {suggestion.value.nomeProduto}
-            </div>
+            </span>
         )
     }
 renderServicoData(ServicoData, produtoList) {

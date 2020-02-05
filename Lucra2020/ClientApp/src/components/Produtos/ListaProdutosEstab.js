@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
 import Autosuggest from 'react-autosuggest';
 import $ from 'jquery';
-import R from 'ramda';
+
 
 export class ListaProdutosEstab extends Component {
    static displayName = ListaProdutosEstab.name;

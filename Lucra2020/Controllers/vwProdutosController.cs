@@ -61,7 +61,8 @@ namespace Lucra2020.Controllers
         [HttpGet("listarProd")]
         public async Task<ActionResult<IEnumerable<vwProduto>>> GetProduto(string produtoNome)
         {
-            return await _context.Produto.Where(a => a.NomeProduto.Contains(produtoNome)).ToListAsync();
+            List<vwProdutoEstabelecimento> produtosEstab = await _context.ProdutoEstabelecimento.Where(a => a.UidEstabelecimento == estab).ToListAsync();
+            return await _context.Produto.Where(a => produtosEstab.Any(uidProd => uidProd.UidProduto.Equals(a.UidProduto))&& a.NomeProduto.Contains(produtoNome)).ToListAsync();// a.NomeProduto.Contains(produtoNome)).ToListAsync();
         }
         [HttpGet("produtoNome")]
         public async Task<ActionResult<IEnumerable<vwProdutoEstabelecimento>>> GetProdutoNome(string produtoNome)
