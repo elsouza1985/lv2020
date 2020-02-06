@@ -137,6 +137,9 @@ export class NavMenu extends Component {
                                     <NavLink tag={Link} className="nav-link" to="/"><i className="ion-speedometer"></i>  <span>Dashboard</span></NavLink>
                                 </NavItem>
                                 <NavItem>
+                                    <NavLink tag={Link} className="nav-link" to="/vendas"><i className="fa fa-shopping-cart"></i> <span>Vendas</span></NavLink>
+                                </NavItem>
+                                <NavItem>
                                     <NavLink tag={Link} className="nav-link"  to="/clientes"><i className="fa fa-user-friends"></i> <span>Clientes</span></NavLink>
                                 </NavItem>
                                 <NavItem>
@@ -149,8 +152,9 @@ export class NavMenu extends Component {
                                     <NavLink tag={Link} className="nav-link" to="/produtosestab"><i className="fa fa-clipboard-list"></i> <span>Produtos Estab</span></NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink tag={Link} className="nav-link" to="/vendas"><i className="fa fa-shopping-cart"></i> <span>Vendas</span></NavLink>
+                                    <NavLink tag={Link} className="nav-link" to="/agenda"><i className="fa fa-calendar"></i> <span>Agenda</span></NavLink>
                                 </NavItem>
+                               
                             </ul>
                         </aside>
                     </div>

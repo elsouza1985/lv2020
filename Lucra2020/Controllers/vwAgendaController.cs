@@ -14,6 +14,7 @@ namespace Lucra2020.Controllers
     public class vwAgendaController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly Guid estab = new Guid("0CB0E46F-6F9D-483E-8494-3DA10347D9C3");
 
         public vwAgendaController(AppDbContext context)
         {
@@ -22,9 +23,14 @@ namespace Lucra2020.Controllers
 
         // GET: api/vwAgenda
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<vwAgenda>>> GetVwAgenda()
+        public async Task<ActionResult<IEnumerable<vwAgenda>>> GetVwAgenda(DateTime date)
         {
-            return await _context.VwAgenda.ToListAsync();
+            if(date == null)
+            {
+                date = DateTime.Now;
+            }
+
+            return await _context.VwAgenda.Where(a=> a.DataHoraAgendamento >= date && a.DataHoraAgendamento < date.AddDays(1)&& a.UidEstabelecimento == estab).ToListAsync();
         }
 
         // GET: api/vwAgenda/5
@@ -75,6 +81,7 @@ namespace Lucra2020.Controllers
         [HttpPost]
         public async Task<ActionResult<vwAgenda>> PostvwAgenda(vwAgenda vwAgenda)
         {
+            vwAgenda.UidEstabelecimento = estab;
             _context.VwAgenda.Add(vwAgenda);
             await _context.SaveChangesAsync();
 
