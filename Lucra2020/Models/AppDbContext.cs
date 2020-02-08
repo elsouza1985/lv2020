@@ -15,7 +15,7 @@ namespace Lucra2020.Models
         {
         }
 
-       
+  
         public virtual DbSet<vwCliente> VwCliente { get; set; }
         public virtual DbSet<vwUsuario> VwUsuario { get; set; }
         public virtual DbSet<vwAgenda> VwAgenda { get; set; }
@@ -23,6 +23,9 @@ namespace Lucra2020.Models
         public virtual DbSet<vwProduto> Produto { get; set; }
         public virtual DbSet<vwServicoEstabelecimento> Servico { get; set; }
         public virtual DbSet<vwServicoEstabelecimentoProduto> ServicoProdutos { get; set; }
+        public virtual DbSet<vwVenda> Vendas { get; set; }
+        public virtual DbSet<vwVendaProdutoItem> VendaProdutoItems { get; set; }
+        public virtual DbSet<vwVendaServicoItem> VendaServicoItems { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 //            if (!optionsBuilder.IsConfigured)

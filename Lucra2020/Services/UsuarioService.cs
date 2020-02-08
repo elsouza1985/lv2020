@@ -13,6 +13,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
+
+
 namespace Lucra2020.Services
 {
     public interface IUsuarioService
@@ -20,29 +22,61 @@ namespace Lucra2020.Services
         UserModel Authenticate(string login, string senha);
     
     }
-
+    
     public class UsuarioService : IUsuarioService
     {
-        public  UserModel Authenticate(string login, string senha)
+        private readonly AppDbContext _context;
+        public UsuarioService(AppDbContext context)
         {
-            using (AppDbContext dbContext = new AppDbContext())
+            _context = context;
+        }
+        public UserModel Authenticate(string login, string senha)
+        {
+
+
+            //var pLogin = new SqlParameter("@EmailUsuario", login);
+            //var pSenha = new SqlParameter("@SenhaUsuario", senha);
+            var senha1 = Encoding.UTF8.GetBytes(senha);
+            StringBuilder query = new StringBuilder();
+            query.Append(@"SELECT TOP(1) *
+                FROM[sec].[UsuarioPerfilPapel] AS[a]
+                WHERE([a].[EmailUsuario] = '");
+            query.Append(login);
+            query.Append("') AND(PWDCOMPARE('");
+            query.Append(senha);
+            query.Append("', [a].[SenhaUsuario]) = 1)");
+            var usuario = _context.VwUsuario.FromSql<vwUsuario>(query.ToString()).FirstOrDefault();
+            if (usuario == null)
             {
-
-                var pLogin = new SqlParameter("@EmailUsuario", login);
-                var pSenha = new SqlParameter("@SenhaUsuario", senha);
-                //var senha1 = Encoding.UTF8.GetBytes(senha);
-
-                vwUsuario usuario = dbContext.VwUsuario.Where(x => x.EmailUsuario == login && x.SenhaUsuario == senha).FirstOrDefault();
-
-                UserModel user = new UserModel
-                {
-                    Email = usuario.EmailUsuario,
-                    Name = usuario.NomeUsuario
-                };                                                   
+                return null;
+            }
+            List<Estabelecimento> estabelecimentos = new List<Estabelecimento>();
+            if (usuario.Estabelecimento != null)
+            {
+                 estabelecimentos = (List<Estabelecimento>)JsonConvert.DeserializeObject(usuario.Estabelecimento);
+            }
+            else
+            {
+                estabelecimentos.Add(new Estabelecimento());
+            }
+            var paps = JsonConvert.DeserializeObject(usuario.Papeis);
+          
+          //  List<Papel> papeis = (List<Papel>)JsonConvert.DeserializeObject(usuario.Papeis);
+            UserModel user = new UserModel
+            {
+                Name = usuario.NomeUsuario,
+                Estabelecimentos = estabelecimentos,
+                Perfil = usuario.Perfil,
+                
+            };
+                //{
+                //    Email = usuario.EmailUsuario,
+                //    Name = usuario.NomeUsuario
+                //};                                                   
                     
 
                 return user;
-            }
+            
 
 
         }

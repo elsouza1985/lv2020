@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Lucra2020.Models;
+using Lucra2020.Security;
 using Lucra2020.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,9 +23,30 @@ namespace Lucra2020.Controllers
         private IConfiguration _config;
         private readonly AppDbContext _context;
 
-        public LoginController(IConfiguration config)
+        public LoginController(IConfiguration config, AppDbContext context)
         {
             _config = config;
+            _context = context;
+
+        }
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<object> PostAsync(
+              [FromBody]User usuario,
+              [FromServices]AccessManager accessManager)
+        {
+            if (await accessManager.ValidateCredentialsAsync(usuario))
+            {
+                return accessManager.GenerateToken(usuario);
+            }
+            else
+            {
+                return new
+                {
+                    Authenticated = false,
+                    Message = "Falha ao autenticar"
+                };
+            }
         }
         [HttpGet]
         public IActionResult Login(string username, string pass)
@@ -46,7 +68,7 @@ namespace Lucra2020.Controllers
         private UserModel AuthenticateUser(UserModel login)
         {
             UserModel user = null;
-            IUsuarioService usuarioService = new UsuarioService();
+            IUsuarioService usuarioService = new UsuarioService(_context);
             user = usuarioService.Authenticate(login.Email,login.Password);
             return user;
         }
@@ -58,9 +80,11 @@ namespace Lucra2020.Controllers
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userinfo.Name),
-                new Claim(JwtRegisteredClaimNames.Sub, userinfo.Email),
+                new Claim(JwtRegisteredClaimNames.Sub, userinfo.UidUsuario.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, userinfo.Estabelecimentos[0].UidEstabelecimento!=null?userinfo.Estabelecimentos[0].UidEstabelecimento.ToString():new Guid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
+          
             var token = new JwtSecurityToken(
                     issuer: _config["Jwt:Issuer"],
                     audience: _config["Jwt:Issuer"],

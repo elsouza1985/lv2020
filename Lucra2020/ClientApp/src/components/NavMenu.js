@@ -12,6 +12,7 @@ import img1 from '../Content/img/lucra-mais.png';
 import img2 from "../Content/img/lucra-mais-small.png";
 import img3 from '../Content/img/avatar/avatar-2.png';
 import img4 from "../Content/img/avatar/avatar-1.png";
+import { logout } from '../Services/auth';
 
 
 export class NavMenu extends Component {
@@ -116,7 +117,7 @@ export class NavMenu extends Component {
                                         <i className="fas fa-cog"></i> Configurar
               </a>
                                     <div className="dropdown-divider"></div>
-                                    <a href="#" className="dropdown-item has-icon text-danger">
+                                    <a href="#" className="dropdown-item has-icon text-danger" onClick={logout}>
                                         <i className="fas fa-sign-out-alt"></i> Sair do Sistema
               </a>
                                 </div>
